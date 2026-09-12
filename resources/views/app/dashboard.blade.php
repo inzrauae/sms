@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dashboard — Lankalink SMS</title>
-<link rel="stylesheet" href="/css/base.css">
-<link rel="stylesheet" href="/css/app.css">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>Dashboard — {{ config('portal.brand_name') }}</title>
+<link rel="stylesheet" href="{{ asset('css/base.css') }}">
+<link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
 <body>
 
@@ -13,25 +14,52 @@
   <aside class="side">
     <a class="wordmark" href="/">
       <span class="glyph" aria-hidden="true">LK</span>
-      <span data-brand>Lankalink SMS</span>
+      <span data-brand>{{ config('portal.brand_name') }}</span>
     </a>
 
     <nav id="nav">
-      <a href="#overview" data-nav="overview">Overview</a>
-      <a href="#compose" data-nav="compose">Send a message</a>
-      <a href="#messages" data-nav="messages">Messages</a>
-      <a href="#groups" data-nav="groups">Contact groups</a>
-      <a href="#senders" data-nav="senders">Sender names <span class="tag" id="nav-senders" hidden>0</span></a>
+      <a href="#overview" data-nav="overview">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span>Overview</span>
+      </a>
+      <a href="#compose" data-nav="compose">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+        <span>Send a message</span>
+      </a>
+      <a href="#messages" data-nav="messages">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+        <span>Messages</span>
+      </a>
+      <a href="#groups" data-nav="groups">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        <span>Contact groups</span>
+      </a>
+      <a href="#senders" data-nav="senders">
+        <div class="nav-item-left">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+          <span>Sender names</span>
+        </div>
+        <span class="tag" id="nav-senders" hidden>0</span>
+      </a>
       <div class="divider"></div>
-      <a href="#tokens" data-nav="tokens">API tokens</a>
-      <a href="#billing" data-nav="billing">Credits</a>
-      <a href="#settings" data-nav="settings">Account</a>
+      <a href="#tokens" data-nav="tokens">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+        <span>API tokens</span>
+      </a>
+      <a href="#billing" data-nav="billing">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        <span>Credits & Billing</span>
+      </a>
+      <a href="#settings" data-nav="settings">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <span>Account</span>
+      </a>
     </nav>
 
     <dl class="balance">
       <dt>Credits remaining</dt>
       <dd id="balance">—</dd>
-      <a class="btn btn-sm btn-block" href="#billing">Add credits</a>
+      <a class="btn btn-sm btn-block" href="#billing">Top up credits</a>
     </dl>
 
     <div class="who">
@@ -54,10 +82,38 @@
       <div id="overview-notice"></div>
 
       <dl class="metrics">
-        <div><dt>Credits remaining</dt><dd id="m-credits">—</dd><div class="sub" id="m-rate"></div></div>
-        <div><dt>Sent this month</dt><dd id="m-month">—</dd><div class="sub" id="m-month-cost"></div></div>
-        <div><dt>Delivered</dt><dd id="m-delivered">—</dd><div class="sub" id="m-delivered-rate"></div></div>
-        <div><dt>In flight</dt><dd id="m-pending">—</dd><div class="sub" id="m-failed"></div></div>
+        <div class="metric-card metric-credits">
+          <div class="metric-header">
+            <dt>Credits remaining</dt>
+            <span class="metric-badge badge-green">Available</span>
+          </div>
+          <dd id="m-credits">—</dd>
+          <div class="sub" id="m-rate"></div>
+        </div>
+        <div class="metric-card metric-sent">
+          <div class="metric-header">
+            <dt>Sent this month</dt>
+            <span class="metric-badge badge-blue">This month</span>
+          </div>
+          <dd id="m-month">—</dd>
+          <div class="sub" id="m-month-cost"></div>
+        </div>
+        <div class="metric-card metric-delivered">
+          <div class="metric-header">
+            <dt>Delivered</dt>
+            <span class="metric-badge badge-teal">Success rate</span>
+          </div>
+          <dd id="m-delivered">—</dd>
+          <div class="sub" id="m-delivered-rate"></div>
+        </div>
+        <div class="metric-card metric-pending">
+          <div class="metric-header">
+            <dt>In flight</dt>
+            <span class="metric-badge badge-amber">Queued</span>
+          </div>
+          <dd id="m-pending">—</dd>
+          <div class="sub" id="m-failed"></div>
+        </div>
       </dl>
 
       <div class="panel">
@@ -108,8 +164,13 @@
               <span>Message</span>
               <textarea class="textarea composer-body" id="c-message" placeholder="Type your message"></textarea>
               <div class="meter">
-                <span><b id="c-chars">0</b> of <span id="c-capacity">160</span> characters</span>
-                <span id="c-encoding">GSM-7</span>
+                <div class="meter-labels">
+                  <span><b id="c-chars">0</b> of <span id="c-capacity">160</span> characters</span>
+                  <span id="c-encoding" class="encoding-tag">GSM-7</span>
+                </div>
+                <div class="meter-bar">
+                  <div class="meter-progress" id="c-meter-progress" style="width: 0%"></div>
+                </div>
               </div>
             </div>
 
@@ -332,8 +393,8 @@
 
 <div id="toast" aria-live="polite"></div>
 
-<script src="/js/segments.js"></script>
-<script src="/js/ui.js"></script>
-<script src="/js/dashboard.js"></script>
+<script src="{{ asset('js/segments.js') }}"></script>
+<script src="{{ asset('js/ui.js') }}"></script>
+<script src="{{ asset('js/dashboard.js') }}"></script>
 </body>
 </html>

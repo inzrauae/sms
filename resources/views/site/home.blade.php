@@ -3,10 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lankalink SMS — bulk SMS and OTP delivery for Sri Lanka</title>
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>{{ config('portal.brand_name') }} — bulk SMS and OTP delivery for Sri Lanka</title>
 <meta name="description" content="Send transactional SMS, OTPs and campaigns to any Sri Lankan network. Pay per message, track every delivery, integrate in an afternoon.">
-<link rel="stylesheet" href="/css/base.css">
-<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="{{ asset('css/base.css') }}">
+<link rel="stylesheet" href="{{ asset('css/site.css') }}">
 </head>
 <body>
 
@@ -14,7 +15,7 @@
   <div class="shell">
     <a class="wordmark" href="/">
       <span class="glyph" aria-hidden="true">LK</span>
-      <span data-brand>Lankalink SMS</span>
+      <span data-brand>{{ config('portal.brand_name') }}</span>
     </a>
     <nav>
       <a href="#rates" class="hide-sm">Rates</a>
@@ -222,12 +223,12 @@ curl -X POST https://your-domain.lk/api/v3/sms/send \
 
 <footer class="foot">
   <div class="shell">
-    <span>&copy; <span id="year">2026</span> <span data-brand>Lankalink SMS</span>. Delivered over the Text.lk gateway.</span>
+    <span>&copy; <span id="year">{{ date('Y') }}</span> <span data-brand>{{ config('portal.brand_name') }}</span>. Delivered over the Text.lk gateway.</span>
     <span><a href="/docs">API reference</a> &nbsp; <a href="/login">Sign in</a></span>
   </div>
 </footer>
 
-<script src="/js/segments.js"></script>
+<script src="{{ asset('js/segments.js') }}"></script>
 <script>
 (function () {
   var RATE = 1.10;
