@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lankalink SMS — bulk SMS and OTP delivery for Sri Lanka</title>
+<meta name="description" content="Send transactional SMS, OTPs and campaigns to any Sri Lankan network. Pay per message, track every delivery, integrate in an afternoon.">
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="shell">
+    <a class="wordmark" href="/">
+      <span class="glyph" aria-hidden="true">LK</span>
+      <span data-brand>Lankalink SMS</span>
+    </a>
+    <nav>
+      <a href="#rates" class="hide-sm">Rates</a>
+      <a href="#developers" class="hide-sm">Developers</a>
+      <a href="/login">Sign in</a>
+      <a href="/register" class="btn btn-sm">Create account</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="shell">
+      <div>
+        <h1>Every message, costed before you send it.</h1>
+        <p class="lede">
+          Bulk SMS, OTPs and scheduled campaigns to Dialog, Mobitel, Hutch and Airtel.
+          You see the segment count and the rupee cost while you type, and a delivery
+          receipt for every number afterwards.
+        </p>
+        <div class="actions">
+          <a class="btn" href="/register">Create an account</a>
+          <a class="btn btn-line" href="#developers">Read the API</a>
+        </div>
+
+        <div class="assurances">
+          <div><b>10</b>free credits when you sign up</div>
+          <div><b>4</b>networks reached directly</div>
+          <div><b>160</b>characters per credit</div>
+        </div>
+      </div>
+
+      <!-- The counter is the product in miniature, so it runs for real. -->
+      <div class="demo">
+        <header>
+          <strong>Cost this message</strong>
+          <span id="demo-encoding">GSM-7</span>
+        </header>
+        <label class="sr-only" for="demo-text">Message to cost</label>
+        <textarea id="demo-text" spellcheck="false">Your OTP is 4821. It expires in 5 minutes. Do not share this code with anyone.</textarea>
+        <dl class="readout">
+          <div><dt>Characters</dt><dd id="demo-chars">0</dd></div>
+          <div><dt>Credits each</dt><dd id="demo-segments">0</dd></div>
+          <div><dt>Cost at Rs 1.10</dt><dd id="demo-cost">Rs 0.00</dd></div>
+        </dl>
+        <p class="note" id="demo-note">A credit covers 160 GSM characters. Longer messages split into segments and bill per segment.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="what">
+    <div class="shell">
+      <h2>Built for the sends that cannot quietly fail</h2>
+      <p class="sub">
+        An OTP that arrives four minutes late is a lost customer. Everything here exists
+        to make delivery visible rather than assumed.
+      </p>
+
+      <div class="capabilities">
+        <div>
+          <h3>Sinhala and Tamil, counted honestly</h3>
+          <p>
+            Non-Latin text drops to 70 characters per segment. The composer shows that
+            the moment you type, so a Sinhala campaign never costs triple what you budgeted.
+          </p>
+        </div>
+        <div>
+          <h3>Delivery receipts per number</h3>
+          <p>
+            Filter by status, sender name or date range, then export the lot to CSV for
+            your reconciliation.
+          </p>
+        </div>
+        <div>
+          <h3>Registered sender names</h3>
+          <p>
+            Messages arrive from your brand, not a shortcode. Submit a sender name and
+            we clear it with the operators.
+          </p>
+        </div>
+        <div>
+          <h3>Contact groups</h3>
+          <p>
+            Paste a list, send to the whole group in one call, and keep the group in
+            sync from your own system through the API.
+          </p>
+        </div>
+        <div>
+          <h3>Scheduled sends</h3>
+          <p>
+            Queue a campaign for Monday at 9am. Credits are held when you schedule, so
+            the send cannot fail for want of balance.
+          </p>
+        </div>
+        <div>
+          <h3>Credits that reconcile</h3>
+          <p>
+            Every debit, refund and top-up lands in a ledger with a running balance.
+            Failed sends return the credits automatically.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band alt" id="rates">
+    <div class="shell">
+      <h2>Rates fall as volume rises</h2>
+      <p class="sub">
+        One credit sends one segment. Prices are per segment in rupees, excluding taxes,
+        and your rate is applied to your account the moment credits are added.
+      </p>
+
+      <div class="rates">
+        <table>
+          <thead>
+            <tr><th>Plan</th><th>Credits</th><th>Typical use</th><th>Per SMS</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tier">Starter</td>
+              <td class="vol">1,000</td>
+              <td>Order alerts for a small shop</td>
+              <td class="price">Rs 1.10</td>
+            </tr>
+            <tr>
+              <td class="tier">Business</td>
+              <td class="vol">25,000</td>
+              <td>OTPs and delivery updates</td>
+              <td class="price">Rs 0.88</td>
+            </tr>
+            <tr>
+              <td class="tier">Volume</td>
+              <td class="vol">100,000</td>
+              <td>School and utility notices</td>
+              <td class="price">Rs 0.68</td>
+            </tr>
+            <tr>
+              <td class="tier">Committed</td>
+              <td class="vol">500,000+</td>
+              <td>Aggregators and platforms</td>
+              <td class="price">Talk to us</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="sub" style="margin-top:18px">
+        Credits never expire. Unused balance carries over every month.
+      </p>
+    </div>
+  </section>
+
+  <section class="band" id="developers">
+    <div class="shell">
+      <h2>One POST and you are sending</h2>
+      <div class="devgrid">
+        <div>
+          <p class="sub">
+            Bearer token, JSON in, JSON out. Generate a token in the dashboard and keep
+            it on your server.
+          </p>
+          <ul>
+            <li>Send to one number or a comma-separated list</li>
+            <li>Send to a saved contact group in a single call</li>
+            <li>Check a message by its ID, or filter the log by date and status</li>
+            <li>Read your remaining credits before a large batch</li>
+            <li>Cost a message with <code>/sms/estimate</code> without sending it</li>
+          </ul>
+        </div>
+        <pre class="code"><code><span class="c"># Send a message</span>
+curl -X POST https://your-domain.lk/api/v3/sms/send \
+  -H <span class="s">'Authorization: Bearer 12|your-token-here'</span> \
+  -H <span class="s">'Content-Type: application/json'</span> \
+  -H <span class="s">'Accept: application/json'</span> \
+  -d <span class="s">'{
+    "recipient": "94710000000",
+    "sender_id": "YourBrand",
+    "type": "plain",
+    "message": "Your order is out for delivery."
+  }'</span>
+
+<span class="c"># Response</span>
+{
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"data"</span>: {
+    <span class="k">"uid"</span>: <span class="s">"a91f3c7d2e04"</span>,
+    <span class="k">"to"</span>: <span class="s">"94710000000"</span>,
+    <span class="k">"sms_count"</span>: 1,
+    <span class="k">"cost"</span>: 1,
+    <span class="k">"status"</span>: <span class="s">"Queued"</span>
+  }
+}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="closer">
+    <div class="shell">
+      <h2>Start with 10 free credits</h2>
+      <p>No card needed. Add a sender name, send a test message to your own phone, and see the receipt come back.</p>
+      <a class="btn" href="/register">Create an account</a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="shell">
+    <span>&copy; <span id="year">2026</span> <span data-brand>Lankalink SMS</span>. Delivered over the Text.lk gateway.</span>
+    <span><a href="/docs">API reference</a> &nbsp; <a href="/login">Sign in</a></span>
+  </div>
+</footer>
+
+<script src="/js/segments.js"></script>
+<script>
+(function () {
+  var RATE = 1.10;
+  var input = document.getElementById('demo-text');
+  var chars = document.getElementById('demo-chars');
+  var segs = document.getElementById('demo-segments');
+  var cost = document.getElementById('demo-cost');
+  var encoding = document.getElementById('demo-encoding');
+  var note = document.getElementById('demo-note');
+
+  function update() {
+    var a = Segments.analyse(input.value);
+    chars.textContent = a.length + ' / ' + a.capacity;
+    segs.textContent = a.segments;
+    cost.textContent = 'Rs ' + (a.segments * RATE).toFixed(2);
+    encoding.textContent = a.encoding === 'gsm' ? 'GSM-7' : 'Unicode';
+
+    if (a.encoding === 'unicode') {
+      note.className = 'note warn';
+      note.textContent = 'Sinhala, Tamil and emoji switch the message to Unicode, which fits only ' +
+        Segments.LIMITS.unicode.single + ' characters in the first credit and ' +
+        Segments.LIMITS.unicode.multi + ' in each one after.';
+    } else if (a.segments > 1) {
+      note.className = 'note warn';
+      note.textContent = 'This message spans ' + a.segments + ' segments, so each recipient costs ' +
+        a.segments + ' credits. Trimming to 160 characters would cost one.';
+    } else {
+      note.className = 'note';
+      note.textContent = 'A credit covers 160 GSM characters. Longer messages split into segments and bill per segment.';
+    }
+  }
+
+  input.addEventListener('input', update);
+  update();
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  fetch('/config').then(function (r) { return r.json(); }).then(function (payload) {
+    if (payload.status !== 'success') return;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-brand]'), function (el) {
+      el.textContent = payload.data.brand_name;
+    });
+  }).catch(function () {});
+})();
+</script>
+</body>
+</html>

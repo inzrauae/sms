@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard — Lankalink SMS</title>
+<link rel="stylesheet" href="/css/base.css">
+<link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+
+<div class="app">
+  <aside class="side">
+    <a class="wordmark" href="/">
+      <span class="glyph" aria-hidden="true">LK</span>
+      <span data-brand>Lankalink SMS</span>
+    </a>
+
+    <nav id="nav">
+      <a href="#overview" data-nav="overview">Overview</a>
+      <a href="#compose" data-nav="compose">Send a message</a>
+      <a href="#messages" data-nav="messages">Messages</a>
+      <a href="#groups" data-nav="groups">Contact groups</a>
+      <a href="#senders" data-nav="senders">Sender names <span class="tag" id="nav-senders" hidden>0</span></a>
+      <div class="divider"></div>
+      <a href="#tokens" data-nav="tokens">API tokens</a>
+      <a href="#billing" data-nav="billing">Credits</a>
+      <a href="#settings" data-nav="settings">Account</a>
+    </nav>
+
+    <dl class="balance">
+      <dt>Credits remaining</dt>
+      <dd id="balance">—</dd>
+      <a class="btn btn-sm btn-block" href="#billing">Add credits</a>
+    </dl>
+
+    <div class="who">
+      <span id="who-name">—</span>
+      <button type="button" id="signout">Sign out</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="view-title">Overview</h1>
+        <p id="view-sub"></p>
+      </div>
+      <div class="actions" id="view-actions"></div>
+    </div>
+
+    <!-- Overview ------------------------------------------------------- -->
+    <section class="view" id="v-overview">
+      <div id="overview-notice"></div>
+
+      <dl class="metrics">
+        <div><dt>Credits remaining</dt><dd id="m-credits">—</dd><div class="sub" id="m-rate"></div></div>
+        <div><dt>Sent this month</dt><dd id="m-month">—</dd><div class="sub" id="m-month-cost"></div></div>
+        <div><dt>Delivered</dt><dd id="m-delivered">—</dd><div class="sub" id="m-delivered-rate"></div></div>
+        <div><dt>In flight</dt><dd id="m-pending">—</dd><div class="sub" id="m-failed"></div></div>
+      </dl>
+
+      <div class="panel">
+        <header><h2>Messages over the last 14 days</h2></header>
+        <div class="body">
+          <div class="spark" id="spark"></div>
+          <div class="spark-axis"><span id="spark-from"></span><span id="spark-to"></span></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <header>
+          <h2>Latest messages</h2>
+          <div class="actions"><a class="btn btn-sm btn-line" href="#messages">See all</a></div>
+        </header>
+        <div class="body flush"><div id="recent"></div></div>
+      </div>
+    </section>
+
+    <!-- Compose -------------------------------------------------------- -->
+    <section class="view" id="v-compose" hidden>
+      <div id="compose-notice"></div>
+
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-mode="numbers">To phone numbers</button>
+        <button role="tab" aria-selected="false" data-mode="group">To a contact group</button>
+      </div>
+
+      <div class="composer">
+        <div class="panel">
+          <div class="body">
+            <label class="field" id="field-numbers">
+              <span>Recipients <span class="hint">one per line, or comma separated</span></span>
+              <textarea class="textarea" id="c-recipients" style="min-height:82px" placeholder="0712345678&#10;0771234567"></textarea>
+            </label>
+
+            <label class="field" id="field-group" hidden>
+              <span>Contact group</span>
+              <select class="select" id="c-group"></select>
+            </label>
+
+            <label class="field">
+              <span>Send from</span>
+              <select class="select" id="c-sender"></select>
+            </label>
+
+            <div class="field">
+              <span>Message</span>
+              <textarea class="textarea composer-body" id="c-message" placeholder="Type your message"></textarea>
+              <div class="meter">
+                <span><b id="c-chars">0</b> of <span id="c-capacity">160</span> characters</span>
+                <span id="c-encoding">GSM-7</span>
+              </div>
+            </div>
+
+            <label class="field">
+              <span>Schedule <span class="hint">optional, leave empty to send now</span></span>
+              <input class="input" type="datetime-local" id="c-schedule">
+            </label>
+          </div>
+        </div>
+
+        <div class="panel">
+          <header><h2>Before you send</h2></header>
+          <div class="body">
+            <dl class="summary">
+              <div><dt>Recipients</dt><dd id="s-recipients">0</dd></div>
+              <div><dt>Segments each</dt><dd id="s-segments">0</dd></div>
+              <div><dt>Encoding</dt><dd id="s-encoding">GSM-7</dd></div>
+              <div class="total"><dt>Credits needed</dt><dd id="s-units">0</dd></div>
+              <div><dt>Balance after</dt><dd id="s-after">—</dd></div>
+            </dl>
+            <p id="s-warning" class="notice notice-warn" style="margin:16px 0 0" hidden></p>
+            <button class="btn btn-block" id="c-send" style="margin-top:18px">Send message</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Messages ------------------------------------------------------- -->
+    <section class="view" id="v-messages" hidden>
+      <div class="panel">
+        <div class="body">
+          <div class="filters">
+            <label class="field grow">
+              <span>Search</span>
+              <input class="input" id="f-search" placeholder="Number or message text">
+            </label>
+            <label class="field">
+              <span>Status</span>
+              <select class="select" id="f-status">
+                <option value="">All</option>
+                <option>Delivered</option>
+                <option>Queued</option>
+                <option>Sent</option>
+                <option>Scheduled</option>
+                <option>Failed</option>
+                <option>Rejected</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>From</span>
+              <input class="input" type="date" id="f-start">
+            </label>
+            <label class="field">
+              <span>To</span>
+              <input class="input" type="date" id="f-end">
+            </label>
+            <button class="btn btn-line" id="f-apply">Apply</button>
+            <button class="btn btn-ghost" id="f-clear">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <header>
+          <h2>Message log</h2>
+          <div class="actions">
+            <button class="btn btn-sm btn-line" id="m-sync">Refresh statuses</button>
+            <button class="btn btn-sm btn-line" id="m-export">Export CSV</button>
+          </div>
+        </header>
+        <div class="body flush"><div id="messages-table"></div></div>
+        <div class="pager" id="messages-pager" hidden>
+          <span id="pager-label"></span>
+          <button class="btn btn-sm btn-line" id="pager-prev">Previous</button>
+          <button class="btn btn-sm btn-line" id="pager-next">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Groups --------------------------------------------------------- -->
+    <section class="view" id="v-groups" hidden>
+      <div class="panel">
+        <header>
+          <h2>Contact groups</h2>
+          <div class="actions"><button class="btn btn-sm" id="g-new">New group</button></div>
+        </header>
+        <div class="body flush"><div id="groups-table"></div></div>
+      </div>
+
+      <div class="panel" id="contacts-panel" hidden>
+        <header>
+          <h2 id="contacts-title">Contacts</h2>
+          <div class="actions">
+            <button class="btn btn-sm btn-line" id="c-import">Paste a list</button>
+            <button class="btn btn-sm" id="c-add">Add contact</button>
+          </div>
+        </header>
+        <div class="body flush"><div id="contacts-table"></div></div>
+      </div>
+    </section>
+
+    <!-- Sender names --------------------------------------------------- -->
+    <section class="view" id="v-senders" hidden>
+      <div class="panel">
+        <header>
+          <h2>Sender names</h2>
+          <p>Up to 11 characters. Operators must clear each name before it can send.</p>
+        </header>
+        <div class="body">
+          <div class="filters">
+            <label class="field grow">
+              <span>Request a sender name</span>
+              <input class="input" id="sender-mask" maxlength="11" placeholder="YourBrand">
+            </label>
+            <button class="btn" id="sender-add">Request approval</button>
+          </div>
+        </div>
+        <div class="body flush"><div id="senders-table"></div></div>
+      </div>
+    </section>
+
+    <!-- API tokens ----------------------------------------------------- -->
+    <section class="view" id="v-tokens" hidden>
+      <div id="token-reveal"></div>
+
+      <div class="panel">
+        <header>
+          <h2>API tokens</h2>
+          <div class="actions"><button class="btn btn-sm" id="t-new">Create token</button></div>
+        </header>
+        <div class="body flush"><div id="tokens-table"></div></div>
+      </div>
+
+      <div class="panel">
+        <header><h2>Sending from your own application</h2></header>
+        <div class="body">
+          <p style="color:var(--muted);font-size:0.92rem;margin-bottom:14px">
+            Keep the token on your server. Anyone holding it can spend your credits.
+          </p>
+          <pre class="code" style="background:var(--ink-deep);border-radius:var(--r-panel);padding:18px;overflow-x:auto;color:#d6e6e6;font-family:var(--mono);font-size:0.84rem;line-height:1.7"><code id="token-sample"></code></pre>
+          <p style="margin-top:14px;font-size:0.9rem"><a href="/docs">Full API reference</a></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Billing -------------------------------------------------------- -->
+    <section class="view" id="v-billing" hidden>
+      <div class="panel">
+        <header>
+          <h2>Request credits</h2>
+          <p>Credits are added once your payment clears.</p>
+        </header>
+        <div class="body">
+          <div class="filters">
+            <label class="field">
+              <span>Credits</span>
+              <input class="input num" id="b-units" type="number" min="100" step="100" value="1000">
+            </label>
+            <label class="field grow">
+              <span>Note <span class="hint">optional</span></span>
+              <input class="input" id="b-note" placeholder="Bank transfer reference">
+            </label>
+            <button class="btn" id="b-request">Send request</button>
+          </div>
+          <p style="color:var(--muted);font-size:0.88rem">
+            At your rate of <span class="num" id="b-rate">—</span> per SMS, that is
+            <span class="num" id="b-total">—</span>.
+          </p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <header><h2>Credit ledger</h2></header>
+        <div class="body flush"><div id="ledger-table"></div></div>
+      </div>
+    </section>
+
+    <!-- Account -------------------------------------------------------- -->
+    <section class="view" id="v-settings" hidden>
+      <div class="panel">
+        <header><h2>Your details</h2></header>
+        <div class="body">
+          <div class="row">
+            <label class="field"><span>Name</span><input class="input" id="p-name"></label>
+            <label class="field"><span>Business name</span><input class="input" id="p-company"></label>
+          </div>
+          <div class="row">
+            <label class="field"><span>Mobile</span><input class="input" id="p-phone"></label>
+            <label class="field"><span>Email</span><input class="input" id="p-email" disabled></label>
+          </div>
+          <button class="btn" id="p-save">Save changes</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <header><h2>Change password</h2></header>
+        <div class="body">
+          <div class="row">
+            <label class="field"><span>Current password</span><input class="input" type="password" id="p-current" autocomplete="current-password"></label>
+            <label class="field"><span>New password</span><input class="input" type="password" id="p-new" autocomplete="new-password"></label>
+          </div>
+          <button class="btn" id="p-password">Change password</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="modal" id="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <h2 id="modal-title"></h2>
+    <p class="sub" id="modal-sub"></p>
+    <div id="modal-body"></div>
+    <div class="foot">
+      <button class="btn btn-line" id="modal-cancel">Cancel</button>
+      <button class="btn" id="modal-ok">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" aria-live="polite"></div>
+
+<script src="/js/segments.js"></script>
+<script src="/js/ui.js"></script>
+<script src="/js/dashboard.js"></script>
+</body>
+</html>
