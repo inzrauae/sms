@@ -24,6 +24,8 @@ class SystemController extends Controller
                 'signup_bonus' => (int) ($all['signup_bonus'] ?? config('portal.signup_bonus')),
                 'support_email' => $all['support_email'] ?? config('portal.support_email'),
                 'currency' => $all['currency'] ?? config('portal.currency'),
+                'sender_id_fee' => (float) ($all['sender_id_fee'] ?? config('portal.sender_id_fee')),
+                'sms_packages' => config('portal.sms_packages'),
             ],
         ]);
     }

@@ -11,7 +11,9 @@
     mode: 'numbers',
     activeGroup: null,
     page: 1,
-    lastPage: 1
+    lastPage: 1,
+    packages: [],
+    senderIdFee: 1000
   };
 
   /* Boot ---------------------------------------------------------------- */
@@ -32,6 +34,10 @@
       if (payload.status !== 'success') return;
       $$('[data-brand]').forEach(function (el) { el.textContent = payload.data.brand_name; });
       document.title = 'Dashboard — ' + payload.data.brand_name;
+      state.packages = payload.data.sms_packages || [];
+      state.senderIdFee = payload.data.sender_id_fee || 1000;
+      renderPackages();
+      $('#sender-fee-hint').textContent = UI.formatMoney(state.senderIdFee);
     }).catch(function () {});
 
     UI.router({
@@ -503,12 +509,13 @@
     }
 
     $('#senders-table').innerHTML = table(
-      ['Name', 'Status', 'Requested', 'Note', ''],
+      ['Name', 'Status', 'Fee', 'Requested', 'Note', ''],
       state.senders.map(function (s) {
         var pill = s.status === 'approved' ? 'pill-ok' : s.status === 'rejected' ? 'pill-bad' : 'pill-wait';
         return [
           '<strong>' + UI.escapeHtml(s.mask) + '</strong>',
           '<span class="pill ' + pill + '">' + UI.escapeHtml(s.status) + '</span>',
+          '<span class="num">' + (s.status === 'rejected' ? 'Refunded' : UI.formatMoney(s.fee_amount)) + '</span>',
           UI.formatDate(s.created_at),
           UI.escapeHtml(s.note || '—'),
           '<div class="right"><button class="btn btn-ghost" data-sender-delete="' + s.id + '">Remove</button></div>'
@@ -587,10 +594,46 @@
     }
   }
 
+  function renderPackages() {
+    if (!state.packages.length) return;
+
+    $('#packages-table').innerHTML = table(
+      ['SMS', 'Rate', 'Total price', ''],
+      state.packages.map(function (p) {
+        return [
+          '<span class="num">' + UI.formatNumber(p.units) + '</span>',
+          '<span class="num">' + UI.formatMoney(p.rate) + '</span>',
+          '<span class="num">' + UI.formatMoney(p.units * p.rate) + '</span>',
+          '<div class="right"><button class="btn btn-sm btn-line" data-pick-package="' + p.units + '">Select</button></div>'
+        ];
+      })
+    );
+
+    var select = $('#b-package');
+    select.innerHTML = state.packages.map(function (p) {
+      return '<option value="' + p.units + '">' + UI.formatNumber(p.units) + ' SMS — ' +
+        UI.formatMoney(p.units * p.rate) + ' (' + UI.formatMoney(p.rate) + '/SMS)</option>';
+    }).join('') + '<option value="custom">Custom amount</option>';
+
+    updateTopupTotal();
+  }
+
   function updateTopupTotal() {
-    var units = Number($('#b-units').value || 0);
-    $('#b-rate').textContent = UI.formatMoney(state.rate);
-    $('#b-total').textContent = UI.formatMoney(units * state.rate);
+    var picked = $('#b-package') ? $('#b-package').value : 'custom';
+    var isCustom = picked === 'custom' || !picked;
+    $('#b-units-field').hidden = !isCustom;
+
+    if (isCustom) {
+      var units = Number($('#b-units').value || 0);
+      $('#b-total-line').textContent = 'At your rate of ' + UI.formatMoney(state.rate) +
+        ' per SMS, that is ' + UI.formatMoney(units * state.rate) + '.';
+    } else {
+      var tier = state.packages.filter(function (p) { return String(p.units) === String(picked); })[0];
+      if (tier) {
+        $('#b-total-line').textContent = UI.formatNumber(tier.units) + ' SMS at ' + UI.formatMoney(tier.rate) +
+          ' per SMS — total ' + UI.formatMoney(tier.units * tier.rate) + '.';
+      }
+    }
   }
 
   /* Account ------------------------------------------------------------- */
@@ -734,8 +777,9 @@
       var mask = $('#sender-mask').value.trim();
       if (!mask) return UI.toast('Enter a sender name.', 'bad');
       try {
-        await UI.api('/app/senders', { method: 'POST', body: { mask: mask } });
+        var res = await UI.api('/app/senders', { method: 'POST', body: { mask: mask } });
         $('#sender-mask').value = '';
+        if (res.data && typeof res.data.credits === 'number') setBalance(res.data.credits);
         UI.toast('Submitted for approval.', 'ok');
         loadSenders();
       } catch (err) {
@@ -771,12 +815,14 @@
 
     // Billing
     $('#b-units').addEventListener('input', updateTopupTotal);
+    $('#b-package').addEventListener('change', updateTopupTotal);
     $('#b-request').onclick = async function () {
       try {
-        var res = await UI.api('/app/topup-request', {
-          method: 'POST',
-          body: { units: Number($('#b-units').value), note: $('#b-note').value }
-        });
+        var picked = $('#b-package').value;
+        var body = picked === 'custom'
+          ? { units: Number($('#b-units').value), note: $('#b-note').value }
+          : { package: Number(picked), note: $('#b-note').value };
+        var res = await UI.api('/app/topup-request', { method: 'POST', body: body });
         UI.toast(res.message, 'ok');
         loadBilling();
       } catch (err) {
@@ -851,6 +897,14 @@
         } catch (err) {
           UI.toast(err.message, 'bad');
         }
+        return;
+      }
+
+      var pickPackage = event.target.closest('[data-pick-package]');
+      if (pickPackage) {
+        $('#b-package').value = pickPackage.dataset.pickPackage;
+        updateTopupTotal();
+        UI.toast('Package selected below — send the request when ready.', 'ok');
         return;
       }
 

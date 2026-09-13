@@ -3,7 +3,7 @@
   'use strict';
 
   var $ = UI.$, $$ = UI.$$;
-  var state = { settings: {}, page: 1, lastPage: 1 };
+  var state = { settings: {}, page: 1, lastPage: 1, packages: [] };
 
   async function boot() {
     try {
@@ -13,6 +13,11 @@
     } catch (err) {
       return;
     }
+
+    fetch('/config').then(function (r) { return r.json(); }).then(function (payload) {
+      if (payload.status !== 'success') return;
+      state.packages = payload.data.sms_packages || [];
+    }).catch(function () {});
 
     UI.router({
       overview: { title: 'Overview', sub: 'The health of the whole portal.' },
@@ -172,12 +177,12 @@
       }
 
       $('#senders-table').innerHTML = table(
-        ['Name', 'Customer', 'Requested', 'Status', ''],
+        ['Name', 'Customer', 'Fee', 'Requested', 'Status', ''],
         res.data.map(function (s) {
           var pill = s.status === 'approved' ? 'pill-ok' : s.status === 'rejected' ? 'pill-bad' : 'pill-wait';
           var actions = s.status === 'pending'
             ? '<button class="btn btn-sm" data-decide="' + s.id + '" data-decision="approved">Approve</button> ' +
-              '<button class="btn btn-sm btn-line" data-decide="' + s.id + '" data-decision="rejected">Reject</button>'
+              '<button class="btn btn-sm btn-line" data-decide="' + s.id + '" data-decision="rejected">Reject (refund)</button>'
             : '<button class="btn btn-ghost" data-decide="' + s.id + '" data-decision="' +
               (s.status === 'approved' ? 'rejected' : 'approved') + '">' +
               (s.status === 'approved' ? 'Revoke' : 'Approve') + '</button>';
@@ -186,6 +191,7 @@
             '<strong>' + UI.escapeHtml(s.mask) + '</strong>',
             UI.escapeHtml(s.company || s.name) + '<div style="font-size:0.84rem;color:var(--muted)">' +
               UI.escapeHtml(s.email) + '</div>',
+            '<span class="num">' + (s.status === 'rejected' ? 'Refunded' : UI.formatMoney(s.fee_amount)) + '</span>',
             UI.formatDate(s.created_at),
             '<span class="pill ' + pill + '">' + UI.escapeHtml(s.status) + '</span>',
             '<div class="right">' + actions + '</div>'
@@ -278,6 +284,20 @@
       $('#s-support').value = s.support_email || '';
       $('#s-rate').value = s.default_rate || '';
       $('#s-bonus').value = s.signup_bonus || '';
+      $('#s-sender-fee').value = s.sender_id_fee || '';
+
+      $('#settings-packages-table').innerHTML = state.packages.length
+        ? table(
+          ['SMS', 'Rate', 'Total price'],
+          state.packages.map(function (p) {
+            return [
+              '<span class="num">' + UI.formatNumber(p.units) + '</span>',
+              '<span class="num">' + UI.formatMoney(p.rate) + '</span>',
+              '<span class="num">' + UI.formatMoney(p.units * p.rate) + '</span>'
+            ];
+          })
+        )
+        : UI.emptyState('No packages configured', '');
     } catch (err) {
       UI.toast(err.message, 'bad');
     }
@@ -305,7 +325,8 @@
             brand_name: $('#s-brand').value,
             support_email: $('#s-support').value,
             default_rate: $('#s-rate').value,
-            signup_bonus: $('#s-bonus').value
+            signup_bonus: $('#s-bonus').value,
+            sender_id_fee: $('#s-sender-fee').value
           }
         });
         UI.toast('Settings saved.', 'ok');

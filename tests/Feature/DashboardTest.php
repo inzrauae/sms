@@ -169,9 +169,9 @@ class DashboardTest extends TestCase
 
     public function test_user_can_request_and_manage_sender_ids(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['credits' => 2000, 'rate' => 1.10]);
 
-        // Request sender ID
+        // Request sender ID — the Rs 1,000 fee is reserved from credits.
         $response = $this->actingAs($user)->postJson('/app/senders', ['mask' => 'MyStore']);
         $response->assertStatus(201);
 
@@ -180,6 +180,7 @@ class DashboardTest extends TestCase
             'mask' => 'MyStore',
             'status' => 'pending',
         ]);
+        $this->assertEquals(2000 - 910, $user->fresh()->credits); // ceil(1000 / 1.10)
 
         // List
         $listResponse = $this->actingAs($user)->getJson('/app/senders');
@@ -192,6 +193,17 @@ class DashboardTest extends TestCase
         $delResponse->assertStatus(200);
 
         $this->assertDatabaseMissing('sender_ids', ['id' => $sender->id]);
+    }
+
+    public function test_sender_id_request_blocked_without_enough_credits_for_fee(): void
+    {
+        $user = User::factory()->create(['credits' => 10, 'rate' => 1.10]);
+
+        $response = $this->actingAs($user)->postJson('/app/senders', ['mask' => 'MyStore']);
+        $response->assertStatus(402);
+
+        $this->assertDatabaseMissing('sender_ids', ['user_id' => $user->id, 'mask' => 'MyStore']);
+        $this->assertEquals(10, $user->fresh()->credits);
     }
 
     public function test_user_can_create_and_revoke_api_tokens(): void
@@ -256,6 +268,33 @@ class DashboardTest extends TestCase
             'units' => 500,
             'amount' => 550.00,
         ]);
+    }
+
+    public function test_user_can_request_credit_topup_from_a_package(): void
+    {
+        $user = User::factory()->create(['credits' => 10, 'rate' => 1.10]);
+
+        // 5,000 SMS package priced at Rs 0.95/SMS regardless of the user's own rate.
+        $response = $this->actingAs($user)->postJson('/app/topup-request', ['package' => 5000]);
+
+        $response->assertStatus(200)
+            ->assertJson(['status' => 'success']);
+
+        $this->assertDatabaseHas('transactions', [
+            'user_id' => $user->id,
+            'type' => 'request',
+            'units' => 5000,
+            'amount' => 4750.00,
+        ]);
+    }
+
+    public function test_topup_request_rejects_unknown_package(): void
+    {
+        $user = User::factory()->create(['credits' => 10, 'rate' => 1.10]);
+
+        $response = $this->actingAs($user)->postJson('/app/topup-request', ['package' => 42]);
+
+        $response->assertStatus(422);
     }
 }
 

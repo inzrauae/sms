@@ -18,6 +18,20 @@ return [
     'support_email' => env('SUPPORT_EMAIL', 'support@example.lk'),
     'currency' => 'LKR',
 
+    // Flat one-time charge (in rupees) to request a sender ID. Reserved when
+    // the customer submits the request, refunded if an admin rejects it.
+    'sender_id_fee' => env('SENDER_ID_FEE', '1000'),
+
+    // Bulk top-up tiers offered on the billing page. Rate is rupees/SMS —
+    // cheaper per message at higher volumes.
+    'sms_packages' => [
+        ['units' => 1000, 'rate' => 1.00],
+        ['units' => 5000, 'rate' => 0.95],
+        ['units' => 10000, 'rate' => 0.90],
+        ['units' => 50000, 'rate' => 0.85],
+        ['units' => 100000, 'rate' => 0.80],
+    ],
+
     // Requests per minute per API token.
     'api_rate_limit' => (int) env('API_RATE_LIMIT', 120),
 

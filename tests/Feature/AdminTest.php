@@ -130,6 +130,30 @@ class AdminTest extends TestCase
         $this->assertEquals('TRCSL registration confirmed', $sender->fresh()->note);
     }
 
+    public function test_sender_id_fee_is_refunded_on_rejection(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $user = User::factory()->create(['credits' => 2000, 'rate' => 1.10]);
+
+        $sender = SenderId::create([
+            'user_id' => $user->id,
+            'mask' => 'BrandLK',
+            'status' => 'pending',
+            'fee_units' => 910,
+            'fee_amount' => 1000,
+        ]);
+        $user->update(['credits' => 2000 - 910]);
+
+        $response = $this->actingAs($admin)->postJson("/admin/senders/{$sender->id}/decision", [
+            'decision' => 'rejected',
+        ]);
+
+        $response->assertStatus(200);
+        $this->assertEquals('rejected', $sender->fresh()->status);
+        $this->assertEquals(0, $sender->fresh()->fee_units);
+        $this->assertEquals(2000, $user->fresh()->credits);
+    }
+
     public function test_admin_can_update_portal_settings(): void
     {
         $admin = User::factory()->admin()->create();

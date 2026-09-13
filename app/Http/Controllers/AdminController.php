@@ -181,7 +181,7 @@ class AdminController extends Controller
         $rows = SenderId::join('users', 'users.id', '=', 'sender_ids.user_id')
             ->orderByRaw("CASE sender_ids.status WHEN 'pending' THEN 0 ELSE 1 END")
             ->orderByDesc('sender_ids.id')
-            ->get(['sender_ids.id', 'sender_ids.mask', 'sender_ids.status', 'sender_ids.note', 'sender_ids.created_at', 'users.name', 'users.company', 'users.email']);
+            ->get(['sender_ids.id', 'sender_ids.mask', 'sender_ids.status', 'sender_ids.note', 'sender_ids.fee_amount', 'sender_ids.created_at', 'users.name', 'users.company', 'users.email']);
 
         return response()->json(['status' => 'success', 'data' => $rows]);
     }
@@ -198,7 +198,22 @@ class AdminController extends Controller
             return $this->fail('Sender name not found.', 404);
         }
 
-        $sender->update(['status' => $decision, 'note' => $request->input('note')]);
+        // Refund the registration fee only on the first rejection out of
+        // "pending" — later revoking an already-approved name keeps the fee,
+        // since the service was already rendered.
+        if ($decision === 'rejected' && $sender->status === 'pending' && $sender->fee_units > 0) {
+            CreditLedger::adjust($sender->user_id, $sender->fee_units, [
+                'type' => 'refund',
+                'note' => 'Refund: sender ID "' . $sender->mask . '" rejected',
+                'amount' => $sender->fee_amount,
+            ]);
+            $sender->fee_units = 0;
+            $sender->fee_amount = 0;
+        }
+
+        $sender->status = $decision;
+        $sender->note = $request->input('note');
+        $sender->save();
 
         return response()->json(['status' => 'success']);
     }
@@ -242,7 +257,7 @@ class AdminController extends Controller
 
     public function settingsStore(Request $request): JsonResponse
     {
-        foreach (['brand_name', 'default_rate', 'signup_bonus', 'support_email', 'currency'] as $key) {
+        foreach (['brand_name', 'default_rate', 'signup_bonus', 'support_email', 'currency', 'sender_id_fee'] as $key) {
             if ($request->filled($key)) {
                 Settings::set($key, $request->input($key));
             }

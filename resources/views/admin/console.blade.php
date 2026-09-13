@@ -143,8 +143,22 @@
               <input class="input num" id="s-bonus" type="number" step="1" min="0">
             </label>
           </div>
+          <div class="row">
+            <label class="field">
+              <span>Sender ID fee <span class="hint">rupees, charged per request, refunded if rejected</span></span>
+              <input class="input num" id="s-sender-fee" type="number" step="1" min="0">
+            </label>
+          </div>
           <button class="btn" id="s-save">Save settings</button>
         </div>
+      </div>
+
+      <div class="panel">
+        <header>
+          <h2>SMS credit packages</h2>
+          <p>Bulk top-up tiers shown on customer billing pages. Edit in config/portal.php.</p>
+        </header>
+        <div class="body flush"><div id="settings-packages-table"></div></div>
       </div>
     </section>
   </div>

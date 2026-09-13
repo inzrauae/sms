@@ -277,7 +277,8 @@
       <div class="panel">
         <header>
           <h2>Sender names</h2>
-          <p>Up to 11 characters. Operators must clear each name before it can send.</p>
+          <p>Up to 11 characters. Operators must clear each name before it can send.
+             A <span class="num" id="sender-fee-hint">—</span> registration fee applies per request, refunded in full if rejected.</p>
         </header>
         <div class="body">
           <div class="filters">
@@ -320,12 +321,24 @@
     <section class="view" id="v-billing" hidden>
       <div class="panel">
         <header>
+          <h2>Credit packages</h2>
+          <p>Buy in bulk for a lower rate per SMS.</p>
+        </header>
+        <div class="body flush"><div id="packages-table"></div></div>
+      </div>
+
+      <div class="panel">
+        <header>
           <h2>Request credits</h2>
           <p>Credits are added once your payment clears.</p>
         </header>
         <div class="body">
           <div class="filters">
             <label class="field">
+              <span>Package</span>
+              <select class="select" id="b-package"></select>
+            </label>
+            <label class="field" id="b-units-field" hidden>
               <span>Credits</span>
               <input class="input num" id="b-units" type="number" min="100" step="100" value="1000">
             </label>
@@ -335,10 +348,7 @@
             </label>
             <button class="btn" id="b-request">Send request</button>
           </div>
-          <p style="color:var(--muted);font-size:0.88rem">
-            At your rate of <span class="num" id="b-rate">—</span> per SMS, that is
-            <span class="num" id="b-total">—</span>.
-          </p>
+          <p style="color:var(--muted);font-size:0.88rem" id="b-total-line"></p>
         </div>
       </div>
 

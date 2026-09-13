@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             'signup_bonus' => config('portal.signup_bonus', '10'),
             'support_email' => config('portal.support_email', 'support@example.lk'),
             'currency' => config('portal.currency', 'LKR'),
+            'sender_id_fee' => config('portal.sender_id_fee', '1000'),
         ];
         foreach ($defaults as $key => $value) {
             Setting::firstOrCreate(['key' => $key], ['value' => (string) $value]);

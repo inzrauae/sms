@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\DispatchException;
+use App\Exceptions\InsufficientCreditsException;
 use App\Exceptions\TextLkException;
 use App\Models\Group;
 use App\Models\Message;
 use App\Models\SenderId;
+use App\Services\CreditLedger;
 use App\Services\Dispatch;
 use App\Services\Settings;
 use App\Services\Sms;
@@ -225,7 +227,7 @@ class DashboardController extends Controller
 
     public function sendersIndex(Request $request): JsonResponse
     {
-        $rows = $request->user()->senderIds()->orderByDesc('id')->get(['id', 'mask', 'status', 'note', 'created_at']);
+        $rows = $request->user()->senderIds()->orderByDesc('id')->get(['id', 'mask', 'status', 'note', 'fee_amount', 'created_at']);
 
         return response()->json(['status' => 'success', 'data' => $rows]);
     }
@@ -237,14 +239,42 @@ class DashboardController extends Controller
             return $this->fail($check['error']);
         }
 
-        $exists = $request->user()->senderIds()->where('mask', $check['value'])->exists();
+        $user = $request->user();
+
+        $exists = $user->senderIds()->where('mask', $check['value'])->exists();
         if ($exists) {
             return $this->fail('You have already requested that sender name.', 409);
         }
 
-        $request->user()->senderIds()->create(['mask' => $check['value'], 'status' => 'pending']);
+        // A flat, refundable fee reserved up front — same reserve-then-refund
+        // shape as SMS sends, so a rejected request never costs the tenant.
+        $fee = (float) Settings::get('sender_id_fee', (string) config('portal.sender_id_fee', 1000));
+        $feeUnits = $fee > 0 ? (int) ceil($fee / max($user->rate, 0.01)) : 0;
 
-        return response()->json(['status' => 'success', 'message' => 'Sender name submitted for approval.'], 201);
+        if ($feeUnits > 0) {
+            try {
+                CreditLedger::adjust($user->id, -$feeUnits, [
+                    'type' => 'sender_fee',
+                    'note' => 'Sender ID registration fee: ' . $check['value'],
+                    'amount' => $fee,
+                ]);
+            } catch (InsufficientCreditsException) {
+                return $this->fail('Not enough credits to cover the Rs ' . number_format($fee) . ' sender ID fee.', 402);
+            }
+        }
+
+        $user->senderIds()->create([
+            'mask' => $check['value'],
+            'status' => 'pending',
+            'fee_units' => $feeUnits,
+            'fee_amount' => $fee,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Sender name submitted for approval.',
+            'data' => ['credits' => $user->fresh()->credits],
+        ], 201);
     }
 
     public function sendersDestroy(Request $request, int $id): JsonResponse
@@ -504,17 +534,33 @@ class DashboardController extends Controller
      */
     public function topupRequest(Request $request): JsonResponse
     {
-        $units = (int) floor((float) $request->input('units'));
-        if ($units < 100) {
-            return $this->fail('Request at least 100 credits.');
+        $packageUnits = $request->input('package');
+
+        if ($packageUnits !== null) {
+            $tier = collect(config('portal.sms_packages'))->firstWhere('units', (int) $packageUnits);
+            if (!$tier) {
+                return $this->fail('Unknown package.');
+            }
+
+            $units = $tier['units'];
+            $amount = round($units * $tier['rate'], 2);
+            $note = $request->input('note') ?: number_format($units) . ' SMS package (Rs ' . number_format($tier['rate'], 2) . '/SMS)';
+        } else {
+            $units = (int) floor((float) $request->input('units'));
+            if ($units < 100) {
+                return $this->fail('Request at least 100 credits.');
+            }
+
+            $amount = $units * $request->user()->rate;
+            $note = $request->input('note') ?: 'Top-up requested';
         }
 
         $request->user()->transactions()->create([
             'type' => 'request',
             'units' => $units,
             'balance_after' => $request->user()->credits,
-            'amount' => $units * $request->user()->rate,
-            'note' => $request->input('note') ?: 'Top-up requested',
+            'amount' => $amount,
+            'note' => $note,
             'actor' => 'user',
         ]);
 
