@@ -3,6 +3,12 @@
   'use strict';
 
   var $ = UI.$, $$ = UI.$$;
+
+  /* Icon paths sourced from Heroicons (heroicons.com), MIT licensed, 20px solid set. */
+  var ICON_CHECK = '<path fill-rule="evenodd" clip-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"/>';
+  var ICON_CLOCK = '<path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z"/>';
+  var ICON_X = '<path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>';
+
   var state = {
     me: null,
     rate: 1.1,
@@ -12,8 +18,9 @@
     activeGroup: null,
     page: 1,
     lastPage: 1,
-    packages: [],
-    senderIdFee: 1000
+    senderIdFee: 1000,
+    paypalUsdRate: 300,
+    paypalRendered: false
   };
 
   /* Boot ---------------------------------------------------------------- */
@@ -24,6 +31,7 @@
       state.me = session.data;
       state.rate = session.data.rate;
       $('#who-name').textContent = session.data.name;
+      $('#who-avatar').textContent = initials(session.data.name);
       setBalance(session.data.credits);
       fillAccount(session.data);
     } catch (err) {
@@ -34,14 +42,18 @@
       if (payload.status !== 'success') return;
       $$('[data-brand]').forEach(function (el) { el.textContent = payload.data.brand_name; });
       document.title = 'Dashboard — ' + payload.data.brand_name;
-      state.packages = payload.data.sms_packages || [];
       state.senderIdFee = payload.data.sender_id_fee || 1000;
-      renderPackages();
       $('#sender-fee-hint').textContent = UI.formatMoney(state.senderIdFee);
+      state.paypalUsdRate = payload.data.paypal_usd_rate || 300;
+      updatePaypalTotal();
     }).catch(function () {});
 
+    var firstName = (state.me.name || '').split(' ')[0] || 'there';
+    var hour = new Date().getHours();
+    var greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+
     UI.router({
-      overview: { title: 'Overview', sub: 'Your account at a glance.' },
+      overview: { title: greeting + ', ' + firstName, sub: 'Here is your account at a glance.' },
       compose: { title: 'Send a message', sub: 'Costed before it leaves.' },
       messages: { title: 'Messages', sub: 'Every message and what happened to it.' },
       groups: { title: 'Contact groups', sub: 'Saved lists you can send to in one call.' },
@@ -52,6 +64,12 @@
     }, load);
 
     wire();
+  }
+
+  function initials(name) {
+    var parts = (name || '').trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return '?';
+    return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
   }
 
   function setBalance(credits) {
@@ -98,12 +116,59 @@
       $('#m-pending').textContent = UI.formatNumber(d.totals.pending || 0);
       $('#m-failed').textContent = UI.formatNumber(d.totals.failed || 0) + ' failed';
 
+      drawStatusBar(d.totals);
       drawSpark(d.daily);
       drawRecent(d.recent);
       noticeFor(d);
     } catch (err) {
       UI.toast(err.message, 'bad');
     }
+  }
+
+  function drawStatusBar(totals) {
+    var delivered = totals.delivered || 0;
+    var pending = totals.pending || 0;
+    var failed = totals.failed || 0;
+    var total = delivered + pending + failed;
+
+    var bar = $('#status-bar');
+    var legend = $('#status-legend');
+
+    if (!total) {
+      bar.innerHTML = '';
+      bar.setAttribute('aria-hidden', 'true');
+      legend.innerHTML = '<li class="status-legend-item"><span>No messages sent yet — this fills in once you start sending.</span></li>';
+      return;
+    }
+
+    var segments = [
+      { key: 's-ok', label: 'Delivered', count: delivered, icon: ICON_CHECK },
+      { key: 's-wait', label: 'In flight', count: pending, icon: ICON_CLOCK },
+      { key: 's-bad', label: 'Failed', count: failed, icon: ICON_X }
+    ];
+
+    bar.setAttribute('role', 'img');
+    bar.setAttribute('aria-label', segments.map(function (s) {
+      return s.label + ' ' + s.count + ' of ' + total;
+    }).join(', '));
+
+    bar.innerHTML = segments
+      .filter(function (s) { return s.count > 0; })
+      .map(function (s) {
+        var pct = (s.count / total) * 100;
+        return '<div class="status-bar-seg ' + s.key + '" style="flex-basis:' + pct.toFixed(2) + '%"></div>';
+      })
+      .join('');
+
+    legend.innerHTML = segments.map(function (s) {
+      var pct = Math.round((s.count / total) * 100);
+      return '<li class="status-legend-item">' +
+        '<span class="status-swatch ' + s.key + '"></span>' +
+        '<svg class="status-legend-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">' + s.icon + '</svg>' +
+        '<span class="status-legend-label">' + s.label + '</span>' +
+        '<span class="status-legend-value">' + UI.formatNumber(s.count) + ' (' + pct + '%)</span>' +
+        '</li>';
+    }).join('');
   }
 
   function drawSpark(daily) {
@@ -116,6 +181,19 @@
       d.setDate(d.getDate() - i);
       var key = d.toISOString().slice(0, 10);
       days.push({ key: key, count: byDay[key] || 0 });
+    }
+
+    $('#spark-from').textContent = days[0].key.slice(5);
+    $('#spark-to').textContent = 'today';
+
+    var activeDays = days.filter(function (d) { return d.count > 0; }).length;
+    if (!activeDays) {
+      var emptyHost = $('#spark');
+      emptyHost.classList.add('is-empty');
+      emptyHost.innerHTML = '<div class="spark-empty">' +
+        '<strong>No messages in the last 14 days</strong>' +
+        '<span>Send your first message to see activity here.</span></div>';
+      return;
     }
 
     var peak = Math.max.apply(null, days.map(function (d) { return d.count; }).concat([1]));
@@ -163,13 +241,11 @@
     svgEl.addEventListener('mouseleave', function () { tip.hidden = true; });
 
     var host = $('#spark');
+    host.classList.remove('is-empty');
     host.innerHTML = '';
     host.style.position = 'relative';
     host.appendChild(svgEl);
     host.appendChild(tip);
-
-    $('#spark-from').textContent = days[0].key.slice(5);
-    $('#spark-to').textContent = 'today';
   }
 
   function drawRecent(rows) {
@@ -568,6 +644,8 @@
   async function loadBilling() {
     $('#ledger-table').innerHTML = UI.loading;
     updateTopupTotal();
+    updatePaypalTotal();
+    initPaypalButtons();
 
     try {
       var res = await UI.api('/app/transactions');
@@ -594,46 +672,60 @@
     }
   }
 
-  function renderPackages() {
-    if (!state.packages.length) return;
-
-    $('#packages-table').innerHTML = table(
-      ['SMS', 'Rate', 'Total price', ''],
-      state.packages.map(function (p) {
-        return [
-          '<span class="num">' + UI.formatNumber(p.units) + '</span>',
-          '<span class="num">' + UI.formatMoney(p.rate) + '</span>',
-          '<span class="num">' + UI.formatMoney(p.units * p.rate) + '</span>',
-          '<div class="right"><button class="btn btn-sm btn-line" data-pick-package="' + p.units + '">Select</button></div>'
-        ];
-      })
-    );
-
-    var select = $('#b-package');
-    select.innerHTML = state.packages.map(function (p) {
-      return '<option value="' + p.units + '">' + UI.formatNumber(p.units) + ' SMS — ' +
-        UI.formatMoney(p.units * p.rate) + ' (' + UI.formatMoney(p.rate) + '/SMS)</option>';
-    }).join('') + '<option value="custom">Custom amount</option>';
-
-    updateTopupTotal();
+  function updateTopupTotal() {
+    var units = Number($('#b-units').value || 0);
+    $('#b-total-line').textContent = 'At the flat rate of ' + UI.formatMoney(state.rate) +
+      ' per SMS, that is ' + UI.formatMoney(units * state.rate) + '.';
   }
 
-  function updateTopupTotal() {
-    var picked = $('#b-package') ? $('#b-package').value : 'custom';
-    var isCustom = picked === 'custom' || !picked;
-    $('#b-units-field').hidden = !isCustom;
+  function updatePaypalTotal() {
+    var units = Number($('#pp-units').value || 0);
+    var lkr = units * state.rate;
+    var usd = lkr / Math.max(state.paypalUsdRate, 1);
+    $('#pp-total-line').textContent = UI.formatMoney(lkr) + ' ≈ $' + usd.toFixed(2) + ' USD';
+  }
 
-    if (isCustom) {
-      var units = Number($('#b-units').value || 0);
-      $('#b-total-line').textContent = 'At your rate of ' + UI.formatMoney(state.rate) +
-        ' per SMS, that is ' + UI.formatMoney(units * state.rate) + '.';
-    } else {
-      var tier = state.packages.filter(function (p) { return String(p.units) === String(picked); })[0];
-      if (tier) {
-        $('#b-total-line').textContent = UI.formatNumber(tier.units) + ' SMS at ' + UI.formatMoney(tier.rate) +
-          ' per SMS — total ' + UI.formatMoney(tier.units * tier.rate) + '.';
-      }
+  function initPaypalButtons() {
+    var host = $('#paypal-buttons');
+    var notice = $('#paypal-notice');
+
+    if (typeof window.paypal === 'undefined') {
+      notice.innerHTML = '<div class="notice notice-warn">PayPal is not set up yet. Ask an admin to add PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET.</div>';
+      return;
     }
+    notice.innerHTML = '';
+
+    if (state.paypalRendered) return;
+    state.paypalRendered = true;
+
+    window.paypal.Buttons({
+      style: { layout: 'horizontal', height: 40, tagline: false },
+
+      createOrder: function () {
+        var units = Number($('#pp-units').value || 0);
+        if (units < 100) {
+          UI.toast('Buy at least 100 credits.', 'bad');
+          return Promise.reject(new Error('units too low'));
+        }
+        return UI.api('/app/paypal/orders', { method: 'POST', body: { units: units } })
+          .then(function (res) { return res.data.order_id; })
+          .catch(function (err) { UI.toast(err.message, 'bad'); throw err; });
+      },
+
+      onApprove: function (data) {
+        return UI.api('/app/paypal/orders/' + data.orderID + '/capture', { method: 'POST' })
+          .then(function (res) {
+            UI.toast(res.message, 'ok');
+            setBalance(res.data.credits);
+            loadBilling();
+          })
+          .catch(function (err) { UI.toast(err.message, 'bad'); });
+      },
+
+      onError: function () {
+        UI.toast('PayPal could not complete that payment.', 'bad');
+      }
+    }).render(host);
   }
 
   /* Account ------------------------------------------------------------- */
@@ -815,13 +907,10 @@
 
     // Billing
     $('#b-units').addEventListener('input', updateTopupTotal);
-    $('#b-package').addEventListener('change', updateTopupTotal);
+    $('#pp-units').addEventListener('input', updatePaypalTotal);
     $('#b-request').onclick = async function () {
       try {
-        var picked = $('#b-package').value;
-        var body = picked === 'custom'
-          ? { units: Number($('#b-units').value), note: $('#b-note').value }
-          : { package: Number(picked), note: $('#b-note').value };
+        var body = { units: Number($('#b-units').value), note: $('#b-note').value };
         var res = await UI.api('/app/topup-request', { method: 'POST', body: body });
         UI.toast(res.message, 'ok');
         loadBilling();
@@ -897,14 +986,6 @@
         } catch (err) {
           UI.toast(err.message, 'bad');
         }
-        return;
-      }
-
-      var pickPackage = event.target.closest('[data-pick-package]');
-      if (pickPackage) {
-        $('#b-package').value = pickPackage.dataset.pickPackage;
-        updateTopupTotal();
-        UI.toast('Package selected below — send the request when ready.', 'ok');
         return;
       }
 

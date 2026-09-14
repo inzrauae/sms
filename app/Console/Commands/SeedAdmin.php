@@ -51,7 +51,7 @@ class SeedAdmin extends Command
                 'email' => $email,
                 'password' => $password,
                 'role' => 'admin',
-                'rate' => (float) Settings::get('default_rate', '1.10'),
+                'rate' => (float) Settings::get('default_rate', '0.99'),
                 'credits' => 0,
             ]);
             $this->info("Created admin {$email} (id {$user->id}).");
@@ -69,7 +69,7 @@ class SeedAdmin extends Command
                     'email' => $demoEmail,
                     'phone' => '94712345678',
                     'password' => 'demo12345',
-                    'rate' => 0.88,
+                    'rate' => 0.99,
                 ]);
                 CreditLedger::adjust($demo->id, 2500, ['type' => 'topup', 'note' => 'Demo credits', 'actor' => 'seed']);
             }

@@ -41,4 +41,13 @@ return [
         'timeout' => (int) env('TEXTLK_TIMEOUT_MS', 20000),
     ],
 
+    // PayPal Orders API v2. Client ID is safe to expose to the browser (the
+    // JS SDK needs it to render the buttons) — only the secret is
+    // confidential, and it never leaves this server.
+    'paypal' => [
+        'mode' => env('PAYPAL_MODE', 'sandbox'), // 'sandbox' or 'live'
+        'client_id' => env('PAYPAL_CLIENT_ID'),
+        'client_secret' => env('PAYPAL_CLIENT_SECRET'),
+    ],
+
 ];

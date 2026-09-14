@@ -534,26 +534,13 @@ class DashboardController extends Controller
      */
     public function topupRequest(Request $request): JsonResponse
     {
-        $packageUnits = $request->input('package');
-
-        if ($packageUnits !== null) {
-            $tier = collect(config('portal.sms_packages'))->firstWhere('units', (int) $packageUnits);
-            if (!$tier) {
-                return $this->fail('Unknown package.');
-            }
-
-            $units = $tier['units'];
-            $amount = round($units * $tier['rate'], 2);
-            $note = $request->input('note') ?: number_format($units) . ' SMS package (Rs ' . number_format($tier['rate'], 2) . '/SMS)';
-        } else {
-            $units = (int) floor((float) $request->input('units'));
-            if ($units < 100) {
-                return $this->fail('Request at least 100 credits.');
-            }
-
-            $amount = $units * $request->user()->rate;
-            $note = $request->input('note') ?: 'Top-up requested';
+        $units = (int) floor((float) $request->input('units'));
+        if ($units < 100) {
+            return $this->fail('Request at least 100 credits.');
         }
+
+        $amount = $units * $request->user()->rate;
+        $note = $request->input('note') ?: 'Top-up requested';
 
         $request->user()->transactions()->create([
             'type' => 'request',

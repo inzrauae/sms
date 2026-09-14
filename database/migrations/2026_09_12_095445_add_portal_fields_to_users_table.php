@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('role')->default('user')->after('password');
             $table->string('status')->default('active')->after('role');
             $table->integer('credits')->default(0)->after('status');
-            $table->decimal('rate', 8, 2)->default(1.10)->after('credits');
+            $table->decimal('rate', 8, 2)->default(0.99)->after('credits');
         });
     }
 

@@ -59,7 +59,7 @@
         <dl class="readout">
           <div><dt>Characters</dt><dd id="demo-chars">0</dd></div>
           <div><dt>Credits each</dt><dd id="demo-segments">0</dd></div>
-          <div><dt>Cost at Rs 1.10</dt><dd id="demo-cost">Rs 0.00</dd></div>
+          <div><dt>Cost at Rs 0.99</dt><dd id="demo-cost">Rs 0.00</dd></div>
         </dl>
         <p class="note" id="demo-note">A credit covers 160 GSM characters. Longer messages split into segments and bill per segment.</p>
       </div>
@@ -76,6 +76,7 @@
 
       <div class="capabilities">
         <div>
+          <span class="cap-icon" aria-hidden="true"><x-icon name="language" /></span>
           <h3>Sinhala and Tamil, counted honestly</h3>
           <p>
             Non-Latin text drops to 70 characters per segment. The composer shows that
@@ -83,6 +84,7 @@
           </p>
         </div>
         <div>
+          <span class="cap-icon" aria-hidden="true"><x-icon name="check-circle" /></span>
           <h3>Delivery receipts per number</h3>
           <p>
             Filter by status, sender name or date range, then export the lot to CSV for
@@ -90,6 +92,7 @@
           </p>
         </div>
         <div>
+          <span class="cap-icon" aria-hidden="true"><x-icon name="tag" /></span>
           <h3>Registered sender names</h3>
           <p>
             Messages arrive from your brand, not a shortcode. Submit a sender name and
@@ -97,6 +100,7 @@
           </p>
         </div>
         <div>
+          <span class="cap-icon" aria-hidden="true"><x-icon name="user-group" /></span>
           <h3>Contact groups</h3>
           <p>
             Paste a list, send to the whole group in one call, and keep the group in
@@ -104,6 +108,7 @@
           </p>
         </div>
         <div>
+          <span class="cap-icon" aria-hidden="true"><x-icon name="clock" /></span>
           <h3>Scheduled sends</h3>
           <p>
             Queue a campaign for Monday at 9am. Credits are held when you schedule, so
@@ -111,6 +116,7 @@
           </p>
         </div>
         <div>
+          <span class="cap-icon" aria-hidden="true"><x-icon name="banknotes" /></span>
           <h3>Credits that reconcile</h3>
           <p>
             Every debit, refund and top-up lands in a ledger with a running balance.
@@ -123,48 +129,26 @@
 
   <section class="band alt" id="rates">
     <div class="shell">
-      <h2>Rates fall as volume rises</h2>
+      <h2>One flat rate. Pay as you go.</h2>
       <p class="sub">
-        One credit sends one segment. Prices are per segment in rupees, excluding taxes,
-        and your rate is applied to your account the moment credits are added.
+        No plans, no monthly minimums, no volume tiers to negotiate. One credit sends
+        one segment, and every segment costs the same, however many you send.
       </p>
 
-      <div class="rates">
-        <table>
-          <thead>
-            <tr><th>Plan</th><th>Credits</th><th>Typical use</th><th>Per SMS</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="tier">Starter</td>
-              <td class="vol">1,000</td>
-              <td>Order alerts for a small shop</td>
-              <td class="price">Rs 1.10</td>
-            </tr>
-            <tr>
-              <td class="tier">Business</td>
-              <td class="vol">25,000</td>
-              <td>OTPs and delivery updates</td>
-              <td class="price">Rs 0.88</td>
-            </tr>
-            <tr>
-              <td class="tier">Volume</td>
-              <td class="vol">100,000</td>
-              <td>School and utility notices</td>
-              <td class="price">Rs 0.68</td>
-            </tr>
-            <tr>
-              <td class="tier">Committed</td>
-              <td class="vol">500,000+</td>
-              <td>Aggregators and platforms</td>
-              <td class="price">Talk to us</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="price-card">
+        <div class="price-card-figure">
+          <span class="price-card-currency">Rs</span>
+          <span class="price-card-amount">0.99</span>
+          <span class="price-card-unit">/ SMS segment</span>
+        </div>
+        <ul class="price-card-list">
+          <li>Buy credits whenever you like — they never expire</li>
+          <li>The same rate on Dialog, Mobitel, Hutch and Airtel</li>
+          <li>No setup fee, no monthly commitment</li>
+          <li>10 free credits the moment you sign up</li>
+        </ul>
+        <a class="btn btn-block" href="/register">Create an account</a>
       </div>
-      <p class="sub" style="margin-top:18px">
-        Credits never expire. Unused balance carries over every month.
-      </p>
     </div>
   </section>
 
@@ -231,7 +215,7 @@ curl -X POST https://your-domain.lk/api/v3/sms/send \
 <script src="{{ asset('js/segments.js') }}"></script>
 <script>
 (function () {
-  var RATE = 1.10;
+  var RATE = 0.99;
   var input = document.getElementById('demo-text');
   var chars = document.getElementById('demo-chars');
   var segs = document.getElementById('demo-segments');

@@ -146,7 +146,7 @@ Accept: application/json</div>
   <div class="endpoint"><b>GET</b> /api/v3/balance</div>
   <div class="code">{
   "status": "success",
-  "data": { "remaining_sms_unit": 4820, "rate": 0.88, "currency": "LKR" }
+  "data": { "remaining_sms_unit": 4820, "rate": 0.99, "currency": "LKR" }
 }</div>
 
   <h2>Your contact groups</h2>

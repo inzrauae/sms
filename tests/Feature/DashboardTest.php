@@ -270,12 +270,11 @@ class DashboardTest extends TestCase
         ]);
     }
 
-    public function test_user_can_request_credit_topup_from_a_package(): void
+    public function test_topup_request_charges_flat_pay_as_you_go_rate(): void
     {
-        $user = User::factory()->create(['credits' => 10, 'rate' => 1.10]);
+        $user = User::factory()->create(['credits' => 10, 'rate' => 0.99]);
 
-        // 5,000 SMS package priced at Rs 0.95/SMS regardless of the user's own rate.
-        $response = $this->actingAs($user)->postJson('/app/topup-request', ['package' => 5000]);
+        $response = $this->actingAs($user)->postJson('/app/topup-request', ['units' => 5000]);
 
         $response->assertStatus(200)
             ->assertJson(['status' => 'success']);
@@ -284,17 +283,8 @@ class DashboardTest extends TestCase
             'user_id' => $user->id,
             'type' => 'request',
             'units' => 5000,
-            'amount' => 4750.00,
+            'amount' => 4950.00,
         ]);
-    }
-
-    public function test_topup_request_rejects_unknown_package(): void
-    {
-        $user = User::factory()->create(['credits' => 10, 'rate' => 1.10]);
-
-        $response = $this->actingAs($user)->postJson('/app/topup-request', ['package' => 42]);
-
-        $response->assertStatus(422);
     }
 }
 

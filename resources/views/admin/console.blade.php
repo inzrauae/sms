@@ -18,14 +18,41 @@
     </a>
 
     <nav>
-      <a href="#overview" data-nav="overview">Overview</a>
-      <a href="#users" data-nav="users">Customers</a>
-      <a href="#senders" data-nav="senders">Sender approvals <span class="tag" id="nav-senders" hidden>0</span></a>
-      <a href="#requests" data-nav="requests">Credit requests <span class="tag" id="nav-requests" hidden>0</span></a>
-      <a href="#traffic" data-nav="traffic">All traffic</a>
+      <a href="#overview" data-nav="overview">
+        <x-icon name="home" class="nav-icon" />
+        <span>Overview</span>
+      </a>
+      <a href="#users" data-nav="users">
+        <x-icon name="user-group" class="nav-icon" />
+        <span>Customers</span>
+      </a>
+      <a href="#senders" data-nav="senders">
+        <div class="nav-item-left">
+          <x-icon name="tag" class="nav-icon" />
+          <span>Sender approvals</span>
+        </div>
+        <span class="tag" id="nav-senders" hidden>0</span>
+      </a>
+      <a href="#requests" data-nav="requests">
+        <div class="nav-item-left">
+          <x-icon name="banknotes" class="nav-icon" />
+          <span>Credit requests</span>
+        </div>
+        <span class="tag" id="nav-requests" hidden>0</span>
+      </a>
+      <a href="#traffic" data-nav="traffic">
+        <x-icon name="chart-bar" class="nav-icon" />
+        <span>All traffic</span>
+      </a>
       <div class="divider"></div>
-      <a href="#settings" data-nav="settings">Portal settings</a>
-      <a href="/dashboard">My own dashboard</a>
+      <a href="#settings" data-nav="settings">
+        <x-icon name="cog-6-tooth" class="nav-icon" />
+        <span>Portal settings</span>
+      </a>
+      <a href="/dashboard">
+        <x-icon name="arrow-right-circle" class="nav-icon" />
+        <span>My own dashboard</span>
+      </a>
     </nav>
 
     <dl class="balance">
@@ -34,7 +61,10 @@
     </dl>
 
     <div class="who">
-      <span id="who-name">—</span>
+      <div class="who-id">
+        <span class="who-avatar" id="who-avatar"></span>
+        <span id="who-name">—</span>
+      </div>
       <button type="button" id="signout">Sign out</button>
     </div>
   </aside>
@@ -53,14 +83,46 @@
       <div id="reconcile"></div>
 
       <dl class="metrics">
-        <div><dt>Customers</dt><dd id="m-tenants">—</dd><div class="sub" id="m-pending-senders"></div></div>
-        <div><dt>Credits sold</dt><dd id="m-sold">—</dd><div class="sub">Owed to customers</div></div>
-        <div><dt>Sent this month</dt><dd id="m-traffic">—</dd><div class="sub" id="m-units"></div></div>
-        <div><dt>Billed this month</dt><dd id="m-revenue">—</dd><div class="sub">At customer rates</div></div>
+        <div class="metric-card metric-tenants">
+          <span class="metric-icon" aria-hidden="true"><x-icon name="user-group" /></span>
+          <div class="metric-header"><dt>Customers</dt></div>
+          <dd id="m-tenants">—</dd>
+          <div class="sub" id="m-pending-senders"></div>
+        </div>
+        <div class="metric-card metric-sold">
+          <span class="metric-icon" aria-hidden="true"><x-icon name="wallet" /></span>
+          <div class="metric-header"><dt>Credits sold</dt></div>
+          <dd id="m-sold">—</dd>
+          <div class="sub">Owed to customers</div>
+        </div>
+        <div class="metric-card metric-traffic">
+          <span class="metric-icon" aria-hidden="true"><x-icon name="paper-airplane" /></span>
+          <div class="metric-header"><dt>Sent this month</dt></div>
+          <dd id="m-traffic">—</dd>
+          <div class="sub" id="m-units"></div>
+        </div>
+        <div class="metric-card metric-revenue">
+          <span class="metric-icon" aria-hidden="true"><x-icon name="banknotes" /></span>
+          <div class="metric-header"><dt>Billed this month</dt></div>
+          <dd id="m-revenue">—</dd>
+          <div class="sub">At customer rates</div>
+        </div>
       </dl>
 
       <div class="panel">
         <header>
+          <span class="panel-icon icon-jade" aria-hidden="true"><x-icon name="shield-check" /></span>
+          <h2>Delivery status this month</h2>
+        </header>
+        <div class="body">
+          <div class="status-bar" id="status-bar"></div>
+          <ul class="status-legend" id="status-legend"></ul>
+        </div>
+      </div>
+
+      <div class="panel">
+        <header>
+          <span class="panel-icon icon-amber" aria-hidden="true"><x-icon name="bell" /></span>
           <h2>Waiting on you</h2>
         </header>
         <div class="body flush"><div id="queue"></div></div>
@@ -81,7 +143,10 @@
         </div>
       </div>
       <div class="panel">
-        <header><h2>Customers</h2></header>
+        <header>
+          <span class="panel-icon icon-indigo" aria-hidden="true"><x-icon name="user-group" /></span>
+          <h2>Customers</h2>
+        </header>
         <div class="body flush"><div id="users-table"></div></div>
       </div>
     </section>
@@ -90,6 +155,7 @@
     <section class="view" id="v-senders" hidden>
       <div class="panel">
         <header>
+          <span class="panel-icon icon-indigo" aria-hidden="true"><x-icon name="tag" /></span>
           <h2>Sender names</h2>
           <p>Approve only names the customer is entitled to use.</p>
         </header>
@@ -101,6 +167,7 @@
     <section class="view" id="v-requests" hidden>
       <div class="panel">
         <header>
+          <span class="panel-icon icon-green" aria-hidden="true"><x-icon name="banknotes" /></span>
           <h2>Credit requests</h2>
           <p>Add the credits once payment has cleared. The request clears itself.</p>
         </header>
@@ -111,7 +178,10 @@
     <!-- Traffic -------------------------------------------------------- -->
     <section class="view" id="v-traffic" hidden>
       <div class="panel">
-        <header><h2>All messages</h2></header>
+        <header>
+          <span class="panel-icon icon-jade" aria-hidden="true"><x-icon name="chat-bubble-left-right" /></span>
+          <h2>All messages</h2>
+        </header>
         <div class="body flush"><div id="traffic-table"></div></div>
         <div class="pager" id="traffic-pager" hidden>
           <span id="pager-label"></span>
@@ -125,6 +195,7 @@
     <section class="view" id="v-settings" hidden>
       <div class="panel">
         <header>
+          <span class="panel-icon icon-jade" aria-hidden="true"><x-icon name="cog-6-tooth" /></span>
           <h2>Portal settings</h2>
           <p>These apply to new accounts and the public site.</p>
         </header>
@@ -135,7 +206,7 @@
           </div>
           <div class="row">
             <label class="field">
-              <span>Default rate <span class="hint">rupees per SMS for new accounts</span></span>
+              <span>Flat pay-as-you-go rate <span class="hint">rupees per SMS for new accounts</span></span>
               <input class="input num" id="s-rate" type="number" step="0.01" min="0">
             </label>
             <label class="field">
@@ -148,17 +219,13 @@
               <span>Sender ID fee <span class="hint">rupees, charged per request, refunded if rejected</span></span>
               <input class="input num" id="s-sender-fee" type="number" step="1" min="0">
             </label>
+            <label class="field">
+              <span>PayPal exchange rate <span class="hint">rupees per US dollar — PayPal cannot settle in LKR</span></span>
+              <input class="input num" id="s-paypal-rate" type="number" step="0.01" min="1">
+            </label>
           </div>
           <button class="btn" id="s-save">Save settings</button>
         </div>
-      </div>
-
-      <div class="panel">
-        <header>
-          <h2>SMS credit packages</h2>
-          <p>Bulk top-up tiers shown on customer billing pages. Edit in config/portal.php.</p>
-        </header>
-        <div class="body flush"><div id="settings-packages-table"></div></div>
       </div>
     </section>
   </div>

@@ -3,21 +3,23 @@
   'use strict';
 
   var $ = UI.$, $$ = UI.$$;
-  var state = { settings: {}, page: 1, lastPage: 1, packages: [] };
+  var state = { settings: {}, page: 1, lastPage: 1 };
+
+  function initials(name) {
+    var parts = (name || '').trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return '?';
+    return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+  }
 
   async function boot() {
     try {
       var session = await UI.api('/auth/session');
       if (session.data.role !== 'admin') { location.href = '/dashboard'; return; }
       $('#who-name').textContent = session.data.name;
+      $('#who-avatar').textContent = initials(session.data.name);
     } catch (err) {
       return;
     }
-
-    fetch('/config').then(function (r) { return r.json(); }).then(function (payload) {
-      if (payload.status !== 'success') return;
-      state.packages = payload.data.sms_packages || [];
-    }).catch(function () {});
 
     UI.router({
       overview: { title: 'Overview', sub: 'The health of the whole portal.' },
@@ -76,11 +78,63 @@
       $('#nav-requests').hidden = !d.topup_requests;
       $('#nav-requests').textContent = d.topup_requests;
 
+      drawStatusBar(d.traffic);
       reconcile(d);
       queue(d);
     } catch (err) {
       UI.toast(err.message, 'bad');
     }
+  }
+
+  /* Icon paths sourced from Heroicons (heroicons.com), MIT licensed, 20px solid set. */
+  var ICON_CHECK = '<path fill-rule="evenodd" clip-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z"/>';
+  var ICON_CLOCK = '<path fill-rule="evenodd" clip-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z"/>';
+  var ICON_X = '<path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>';
+
+  function drawStatusBar(traffic) {
+    var delivered = Number(traffic.delivered || 0);
+    var pending = Number(traffic.pending || 0);
+    var failed = Number(traffic.failed || 0);
+    var total = delivered + pending + failed;
+
+    var bar = $('#status-bar');
+    var legend = $('#status-legend');
+
+    if (!total) {
+      bar.innerHTML = '';
+      bar.setAttribute('aria-hidden', 'true');
+      legend.innerHTML = '<li class="status-legend-item"><span>No messages sent this month yet.</span></li>';
+      return;
+    }
+
+    var segments = [
+      { key: 's-ok', label: 'Delivered', count: delivered, icon: ICON_CHECK },
+      { key: 's-wait', label: 'In flight', count: pending, icon: ICON_CLOCK },
+      { key: 's-bad', label: 'Failed', count: failed, icon: ICON_X }
+    ];
+
+    bar.setAttribute('role', 'img');
+    bar.setAttribute('aria-label', segments.map(function (s) {
+      return s.label + ' ' + s.count + ' of ' + total;
+    }).join(', '));
+
+    bar.innerHTML = segments
+      .filter(function (s) { return s.count > 0; })
+      .map(function (s) {
+        var pct = (s.count / total) * 100;
+        return '<div class="status-bar-seg ' + s.key + '" style="flex-basis:' + pct.toFixed(2) + '%"></div>';
+      })
+      .join('');
+
+    legend.innerHTML = segments.map(function (s) {
+      var pct = Math.round((s.count / total) * 100);
+      return '<li class="status-legend-item">' +
+        '<span class="status-swatch ' + s.key + '"></span>' +
+        '<svg class="status-legend-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">' + s.icon + '</svg>' +
+        '<span class="status-legend-label">' + s.label + '</span>' +
+        '<span class="status-legend-value">' + UI.formatNumber(s.count) + ' (' + pct + '%)</span>' +
+        '</li>';
+    }).join('');
   }
 
   // The number that matters most to a reseller: have you sold more credits
@@ -285,19 +339,7 @@
       $('#s-rate').value = s.default_rate || '';
       $('#s-bonus').value = s.signup_bonus || '';
       $('#s-sender-fee').value = s.sender_id_fee || '';
-
-      $('#settings-packages-table').innerHTML = state.packages.length
-        ? table(
-          ['SMS', 'Rate', 'Total price'],
-          state.packages.map(function (p) {
-            return [
-              '<span class="num">' + UI.formatNumber(p.units) + '</span>',
-              '<span class="num">' + UI.formatMoney(p.rate) + '</span>',
-              '<span class="num">' + UI.formatMoney(p.units * p.rate) + '</span>'
-            ];
-          })
-        )
-        : UI.emptyState('No packages configured', '');
+      $('#s-paypal-rate').value = s.paypal_usd_rate || '';
     } catch (err) {
       UI.toast(err.message, 'bad');
     }
@@ -326,7 +368,8 @@
             support_email: $('#s-support').value,
             default_rate: $('#s-rate').value,
             signup_bonus: $('#s-bonus').value,
-            sender_id_fee: $('#s-sender-fee').value
+            sender_id_fee: $('#s-sender-fee').value,
+            paypal_usd_rate: $('#s-paypal-rate').value
           }
         });
         UI.toast('Settings saved.', 'ok');

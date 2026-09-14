@@ -35,7 +35,7 @@ class UserFactory extends Factory
             'role' => 'user',
             'status' => 'active',
             'credits' => 10,
-            'rate' => 1.10,
+            'rate' => 0.99,
             'remember_token' => Str::random(10),
         ];
     }

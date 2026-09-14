@@ -13,7 +13,9 @@ return [
     */
 
     'brand_name' => env('BRAND_NAME', 'Lankalink SMS'),
-    'default_rate' => env('DEFAULT_RATE', '1.10'),
+    // Flat pay-as-you-go price, in rupees per SMS segment. Same rate for
+    // every customer regardless of volume — no plans, no bulk tiers.
+    'default_rate' => env('DEFAULT_RATE', '0.99'),
     'signup_bonus' => env('SIGNUP_BONUS', '10'),
     'support_email' => env('SUPPORT_EMAIL', 'support@example.lk'),
     'currency' => 'LKR',
@@ -22,15 +24,10 @@ return [
     // the customer submits the request, refunded if an admin rejects it.
     'sender_id_fee' => env('SENDER_ID_FEE', '1000'),
 
-    // Bulk top-up tiers offered on the billing page. Rate is rupees/SMS —
-    // cheaper per message at higher volumes.
-    'sms_packages' => [
-        ['units' => 1000, 'rate' => 1.00],
-        ['units' => 5000, 'rate' => 0.95],
-        ['units' => 10000, 'rate' => 0.90],
-        ['units' => 50000, 'rate' => 0.85],
-        ['units' => 100000, 'rate' => 0.80],
-    ],
+    // PayPal cannot settle in LKR, so a top-up is charged in USD at this
+    // rupees-per-dollar rate. Keep it close to the real exchange rate —
+    // editable in the admin console, not a live forex feed.
+    'paypal_usd_rate' => env('PAYPAL_USD_RATE', '300'),
 
     // Requests per minute per API token.
     'api_rate_limit' => (int) env('API_RATE_LIMIT', 120),

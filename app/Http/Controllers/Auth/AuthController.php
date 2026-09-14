@@ -36,7 +36,7 @@ class AuthController extends Controller
         }
 
         $data = $validator->validated();
-        $defaultRate = (float) Settings::get('default_rate', '0.75');
+        $defaultRate = (float) Settings::get('default_rate', '0.99');
 
         $user = User::create([
             'uid' => Uid::make(),

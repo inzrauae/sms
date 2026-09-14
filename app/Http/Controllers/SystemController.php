@@ -25,7 +25,7 @@ class SystemController extends Controller
                 'support_email' => $all['support_email'] ?? config('portal.support_email'),
                 'currency' => $all['currency'] ?? config('portal.currency'),
                 'sender_id_fee' => (float) ($all['sender_id_fee'] ?? config('portal.sender_id_fee')),
-                'sms_packages' => config('portal.sms_packages'),
+                'paypal_usd_rate' => (float) ($all['paypal_usd_rate'] ?? config('portal.paypal_usd_rate')),
             ],
         ]);
     }

@@ -91,10 +91,12 @@ a { color: var(--jade-deep); text-decoration-thickness: 1px; text-underline-offs
   font-size: 0.95rem;
   cursor: pointer;
   text-decoration: none;
-  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease, transform 100ms ease, box-shadow 120ms ease;
 }
 .btn:hover:not(:disabled) { background: var(--jade-deep); }
+.btn:active:not(:disabled) { transform: scale(0.97); }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn:focus-visible { box-shadow: 0 0 0 3px var(--jade-wash); }
 
 .btn-line {
   background: transparent;
@@ -223,10 +225,15 @@ a { color: var(--jade-deep); text-decoration-thickness: 1px; text-underline-offs
 /* Empty states ---------------------------------------------------------- */
 .empty {
   padding: 42px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   color: var(--muted);
 }
+.empty-icon { width: 84px; height: 84px; margin-bottom: 14px; }
 .empty strong { display: block; color: var(--ink); font-weight: 600; margin-bottom: 4px; }
+.empty span { font-size: 0.92rem; }
 
 /* Segment meter --------------------------------------------------------- */
 .meter {

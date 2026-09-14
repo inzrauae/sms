@@ -58,7 +58,14 @@ class AdminController extends Controller
 
         $traffic = DB::table('messages')
             ->where('created_at', '>=', now()->startOfMonth())
-            ->selectRaw('COUNT(*) AS messages, COALESCE(SUM(units),0) AS units, COALESCE(SUM(cost),0) AS revenue')
+            ->selectRaw(
+                "COUNT(*) AS messages,
+                 COALESCE(SUM(units),0) AS units,
+                 COALESCE(SUM(cost),0) AS revenue,
+                 SUM(CASE WHEN status = 'Delivered' THEN 1 ELSE 0 END) AS delivered,
+                 SUM(CASE WHEN status IN ('Failed','Rejected','Undelivered') THEN 1 ELSE 0 END) AS failed,
+                 SUM(CASE WHEN status IN ('Queued','Sent','Pending','Scheduled') THEN 1 ELSE 0 END) AS pending"
+            )
             ->first();
 
         $pendingSenders = SenderId::where('status', 'pending')->count();
@@ -257,7 +264,7 @@ class AdminController extends Controller
 
     public function settingsStore(Request $request): JsonResponse
     {
-        foreach (['brand_name', 'default_rate', 'signup_bonus', 'support_email', 'currency', 'sender_id_fee'] as $key) {
+        foreach (['brand_name', 'default_rate', 'signup_bonus', 'support_email', 'currency', 'sender_id_fee', 'paypal_usd_rate'] as $key) {
             if ($request->filled($key)) {
                 Settings::set($key, $request->input($key));
             }

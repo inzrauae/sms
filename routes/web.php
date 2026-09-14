@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PaypalController;
 use App\Http\Controllers\SystemController;
 use Illuminate\Support\Facades\Route;
 
@@ -63,6 +64,9 @@ Route::prefix('app')->middleware(['auth', 'active'])->group(function () {
 
     Route::get('/transactions', [DashboardController::class, 'transactions']);
     Route::post('/topup-request', [DashboardController::class, 'topupRequest']);
+
+    Route::post('/paypal/orders', [PaypalController::class, 'store']);
+    Route::post('/paypal/orders/{orderId}/capture', [PaypalController::class, 'capture']);
 
     Route::patch('/profile', [DashboardController::class, 'updateProfile']);
     Route::post('/password', [DashboardController::class, 'updatePassword']);
