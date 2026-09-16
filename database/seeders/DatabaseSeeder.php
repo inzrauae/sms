@@ -21,10 +21,10 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Portal settings
         $defaults = [
-            'brand_name' => config('portal.brand_name', 'Lankalink SMS'),
+            'brand_name' => config('portal.brand_name', 'e-SMS'),
             'default_rate' => config('portal.default_rate', '0.99'),
             'signup_bonus' => config('portal.signup_bonus', '10'),
-            'support_email' => config('portal.support_email', 'support@example.lk'),
+            'support_email' => config('portal.support_email', 'support@esms.lk'),
             'currency' => config('portal.currency', 'LKR'),
             'sender_id_fee' => config('portal.sender_id_fee', '1000'),
             'paypal_usd_rate' => config('portal.paypal_usd_rate', '300'),

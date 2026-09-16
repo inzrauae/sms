@@ -13,7 +13,7 @@
 <div class="app">
   <aside class="side">
     <a class="wordmark" href="/">
-      <span class="glyph" aria-hidden="true">LK</span>
+      <span class="glyph" aria-hidden="true">eS</span>
       <span data-brand>{{ config('portal.brand_name') }}</span>
     </a>
 
@@ -356,7 +356,7 @@
           <p style="color:var(--muted);font-size:0.92rem;margin-bottom:14px">
             Keep the token on your server. Anyone holding it can spend your credits.
           </p>
-          <pre class="code" style="background:var(--ink-deep);border-radius:var(--r-panel);padding:18px;overflow-x:auto;color:#d6e6e6;font-family:var(--mono);font-size:0.84rem;line-height:1.7"><code id="token-sample"></code></pre>
+          <pre class="code" style="background:var(--ink-deep);border-radius:var(--r-panel);padding:18px;overflow-x:auto;color:#d7e3f5;font-family:var(--mono);font-size:0.84rem;line-height:1.7"><code id="token-sample"></code></pre>
           <p style="margin-top:14px;font-size:0.9rem"><a href="/docs">Full API reference</a></p>
         </div>
       </div>

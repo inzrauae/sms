@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Exceptions\DispatchException;
 use App\Exceptions\InsufficientCreditsException;
 use App\Exceptions\TextLkException;
+use App\Models\AdminNotification;
 use App\Models\Group;
 use App\Models\Message;
 use App\Models\SenderId;
@@ -268,6 +269,14 @@ class DashboardController extends Controller
             'status' => 'pending',
             'fee_units' => $feeUnits,
             'fee_amount' => $fee,
+        ]);
+
+        AdminNotification::create([
+            'user_id' => $user->id,
+            'type' => 'sender_request',
+            'message' => $user->name . ' requested sender name "' . $check['value'] . '"' .
+                ($fee > 0 ? ' (Rs ' . number_format($fee, 2) . ' fee reserved)' : ''),
+            'data' => ['mask' => $check['value'], 'fee' => $fee],
         ]);
 
         return response()->json([
@@ -549,6 +558,13 @@ class DashboardController extends Controller
             'amount' => $amount,
             'note' => $note,
             'actor' => 'user',
+        ]);
+
+        AdminNotification::create([
+            'user_id' => $request->user()->id,
+            'type' => 'topup_request',
+            'message' => $request->user()->name . ' requested ' . number_format($units) . ' credits (Rs ' . number_format($amount, 2) . ')',
+            'data' => ['units' => $units, 'amount' => $amount],
         ]);
 
         return response()->json(['status' => 'success', 'message' => 'Request sent. Credits appear once payment is confirmed.']);

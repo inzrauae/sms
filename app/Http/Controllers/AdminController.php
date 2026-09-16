@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\InsufficientCreditsException;
 use App\Exceptions\TextLkException;
+use App\Models\AdminNotification;
 use App\Models\SenderId;
 use App\Models\User;
 use App\Services\CreditLedger;
@@ -70,6 +71,7 @@ class AdminController extends Controller
 
         $pendingSenders = SenderId::where('status', 'pending')->count();
         $topupRequests = DB::table('transactions')->where('type', 'request')->count();
+        $unreadNotifications = AdminNotification::whereNull('read_at')->count();
 
         // Reconciliation: credits promised to tenants vs credits actually
         // held upstream. If sold exceeds held, the next sends will fail at
@@ -91,6 +93,7 @@ class AdminController extends Controller
             'traffic' => $traffic,
             'pending_senders' => $pendingSenders,
             'topup_requests' => $topupRequests,
+            'notifications_unread' => $unreadNotifications,
             'settings' => Settings::all(),
         ]]);
     }
@@ -258,6 +261,31 @@ class AdminController extends Controller
             ]);
 
         return response()->json(['status' => 'success', 'data' => $rows]);
+    }
+
+    /* --------------------------------------------------------- notifications */
+
+    public function notifications(): JsonResponse
+    {
+        $rows = AdminNotification::orderByDesc('id')->limit(30)
+            ->get(['id', 'type', 'message', 'data', 'read_at', 'created_at']);
+        $unread = AdminNotification::whereNull('read_at')->count();
+
+        return response()->json(['status' => 'success', 'data' => ['items' => $rows, 'unread' => $unread]]);
+    }
+
+    public function notificationsRead(int $id): JsonResponse
+    {
+        AdminNotification::where('id', $id)->update(['read_at' => now()]);
+
+        return response()->json(['status' => 'success']);
+    }
+
+    public function notificationsReadAll(): JsonResponse
+    {
+        AdminNotification::whereNull('read_at')->update(['read_at' => now()]);
+
+        return response()->json(['status' => 'success']);
     }
 
     /* --------------------------------------------------------------- settings */

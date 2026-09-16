@@ -13,7 +13,7 @@
 <div class="app">
   <aside class="side">
     <a class="wordmark" href="/">
-      <span class="glyph" aria-hidden="true">LK</span>
+      <span class="glyph" aria-hidden="true">eS</span>
       <span data-brand>{{ config('portal.brand_name') }}</span>
     </a>
 
@@ -76,6 +76,19 @@
         <p id="view-sub"></p>
       </div>
       <div class="actions" id="view-actions"></div>
+      <div class="notif-wrap">
+        <button type="button" class="notif-bell" id="notif-bell" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
+          <x-icon name="bell" />
+          <span class="notif-badge" id="notif-badge" hidden>0</span>
+        </button>
+        <div class="notif-panel" id="notif-panel" hidden>
+          <header>
+            <strong>Notifications</strong>
+            <button type="button" class="btn-ghost" id="notif-read-all">Mark all read</button>
+          </header>
+          <div id="notif-list"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Overview ------------------------------------------------------- -->

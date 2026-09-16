@@ -12,12 +12,12 @@ return [
     |
     */
 
-    'brand_name' => env('BRAND_NAME', 'Lankalink SMS'),
+    'brand_name' => env('BRAND_NAME', 'e-SMS'),
     // Flat pay-as-you-go price, in rupees per SMS segment. Same rate for
     // every customer regardless of volume — no plans, no bulk tiers.
     'default_rate' => env('DEFAULT_RATE', '0.99'),
     'signup_bonus' => env('SIGNUP_BONUS', '10'),
-    'support_email' => env('SUPPORT_EMAIL', 'support@example.lk'),
+    'support_email' => env('SUPPORT_EMAIL', 'support@esms.lk'),
     'currency' => 'LKR',
 
     // Flat one-time charge (in rupees) to request a sender ID. Reserved when

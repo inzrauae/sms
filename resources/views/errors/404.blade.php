@@ -10,7 +10,7 @@
 <body>
 <header class="masthead">
   <div class="shell">
-    <a class="wordmark" href="/"><span class="glyph">LK</span><span>{{ config('portal.brand_name') }}</span></a>
+    <a class="wordmark" href="/"><span class="glyph">eS</span><span>{{ config('portal.brand_name') }}</span></a>
   </div>
 </header>
 <main class="notfound">

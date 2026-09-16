@@ -30,7 +30,7 @@
 
 <header class="masthead">
   <div class="shell">
-    <a class="wordmark" href="/"><span class="glyph">LK</span><span data-brand>{{ config('portal.brand_name') }}</span></a>
+    <a class="wordmark" href="/"><span class="glyph">eS</span><span data-brand>{{ config('portal.brand_name') }}</span></a>
     <nav><a href="/">Home</a><a href="/dashboard" class="btn btn-sm">Dashboard</a></nav>
   </div>
 </header>
@@ -67,7 +67,7 @@ Accept: application/json</div>
     </tbody>
   </table>
 
-  <div class="code">curl -X POST https://your-domain.lk/api/v3/sms/send \
+  <div class="code">curl -X POST https://esms.lk/api/v3/sms/send \
   -H 'Authorization: Bearer 12|your-token-here' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -173,9 +173,33 @@ Accept: application/json</div>
 </main>
 
 <footer class="foot">
-  <div class="shell">
-    <span>&copy; <span data-brand>{{ config('portal.brand_name') }}</span></span>
-    <span><a href="/">Home</a> &nbsp; <a href="/dashboard">Dashboard</a></span>
+  <div class="shell foot-grid">
+    <div class="foot-brand">
+      <strong data-brand>{{ config('portal.brand_name') }}</strong>
+      <p>Bulk SMS, OTPs and scheduled campaigns — delivered directly to Dialog, Mobitel, Hutch and Airtel, with a receipt for every number.</p>
+      <a href="mailto:{{ config('portal.support_email') }}">{{ config('portal.support_email') }}</a>
+    </div>
+    <div class="foot-col">
+      <h3>Product</h3>
+      <a href="/#what">What you get</a>
+      <a href="/#journey">How it works</a>
+      <a href="/#rates">Rates</a>
+    </div>
+    <div class="foot-col">
+      <h3>Developers</h3>
+      <a href="/docs">API reference</a>
+      <a href="/register">Create account</a>
+      <a href="/login">Sign in</a>
+    </div>
+    <div class="foot-col">
+      <h3>Company</h3>
+      <a href="mailto:{{ config('portal.support_email') }}">Support</a>
+      <a href="/dashboard">Dashboard</a>
+    </div>
+  </div>
+  <div class="shell foot-bottom">
+    <span>&copy; <span id="year">{{ date('Y') }}</span> <span data-brand>{{ config('portal.brand_name') }}</span>. Delivered over the Text.lk gateway.</span>
+    <span>Dialog &middot; Mobitel &middot; Hutch &middot; Airtel</span>
   </div>
 </footer>
 

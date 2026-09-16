@@ -13,7 +13,7 @@
 
   <aside class="auth-aside">
     <a class="wordmark" href="/" style="color:#fff">
-      <span class="glyph" style="background:#0e7c6b">LK</span>
+      <span class="glyph" style="background:#2563eb">eS</span>
       <span data-brand>{{ config('portal.brand_name') }}</span>
     </a>
 

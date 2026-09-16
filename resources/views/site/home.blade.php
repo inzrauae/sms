@@ -14,7 +14,7 @@
 <header class="masthead">
   <div class="shell">
     <a class="wordmark" href="/">
-      <span class="glyph" aria-hidden="true">LK</span>
+      <span class="glyph" aria-hidden="true">eS</span>
       <span data-brand>{{ config('portal.brand_name') }}</span>
     </a>
     <nav>
@@ -28,6 +28,13 @@
 
 <main>
   <section class="hero">
+    <div class="hero-envelopes" aria-hidden="true">
+      <span class="hero-envelope e1"><x-icon name="envelope" /></span>
+      <span class="hero-envelope e2"><x-icon name="envelope" /></span>
+      <span class="hero-envelope e3"><x-icon name="envelope" /></span>
+      <span class="hero-envelope e4"><x-icon name="envelope" /></span>
+      <span class="hero-envelope e5"><x-icon name="envelope" /></span>
+    </div>
     <div class="shell">
       <div>
         <h1>Every message, costed before you send it.</h1>
@@ -48,38 +55,42 @@
         </div>
       </div>
 
-      <!-- The counter is the product in miniature, so it runs for real. -->
-      <div class="demo">
-        <header>
-          <strong>Cost this message</strong>
-          <span id="demo-encoding">GSM-7</span>
-        </header>
-        <label class="sr-only" for="demo-text">Message to cost</label>
-        <textarea id="demo-text" spellcheck="false">Your OTP is 4821. It expires in 5 minutes. Do not share this code with anyone.</textarea>
-        <dl class="readout">
-          <div><dt>Characters</dt><dd id="demo-chars">0</dd></div>
-          <div><dt>Credits each</dt><dd id="demo-segments">0</dd></div>
-          <div><dt>Cost at Rs 0.99</dt><dd id="demo-cost">Rs 0.00</dd></div>
-        </dl>
-        <div class="segment-bar" id="demo-segbar" role="img" aria-label="Segment usage"></div>
-        <p class="note" id="demo-note">A credit covers 160 GSM characters. Longer messages split into segments and bill per segment.</p>
+      <div class="hero-right">
+        <!-- The counter is the product in miniature, so it runs for real. -->
+        <div class="demo">
+          <header>
+            <strong>Cost this message</strong>
+            <span id="demo-encoding">GSM-7</span>
+          </header>
+          <label class="sr-only" for="demo-text">Message to cost</label>
+          <textarea id="demo-text" spellcheck="false">Your OTP is 4821. It expires in 5 minutes. Do not share this code with anyone.</textarea>
+          <dl class="readout">
+            <div><dt>Characters</dt><dd id="demo-chars">0</dd></div>
+            <div><dt>Credits each</dt><dd id="demo-segments">0</dd></div>
+            <div><dt>Cost at Rs 0.99</dt><dd id="demo-cost">Rs 0.00</dd></div>
+          </dl>
+          <div class="segment-bar" id="demo-segbar" role="img" aria-label="Segment usage"></div>
+          <p class="note" id="demo-note">A credit covers 160 GSM characters. Longer messages split into segments and bill per segment.</p>
+        </div>
+
+        <div class="price-card price-card-hero">
+          <div class="price-card-figure">
+            <span class="price-card-currency">Rs</span>
+            <span class="price-card-amount">0.99</span>
+            <span class="price-card-unit">/ SMS segment</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="operators" aria-label="Networks reached directly">
     <p class="operators-label shell">Delivering directly to every major network in Sri Lanka</p>
-    <div class="marquee">
-      <div class="marquee-track">
-        <span class="op-badge" style="--op:#e4032e"><span class="op-mark">D</span>Dialog</span>
-        <span class="op-badge" style="--op:#00954d"><span class="op-mark">M</span>Mobitel</span>
-        <span class="op-badge" style="--op:#f5821f"><span class="op-mark">H</span>Hutch</span>
-        <span class="op-badge" style="--op:#ed1c24"><span class="op-mark">A</span>Airtel</span>
-        <span class="op-badge" style="--op:#e4032e" aria-hidden="true"><span class="op-mark">D</span>Dialog</span>
-        <span class="op-badge" style="--op:#00954d" aria-hidden="true"><span class="op-mark">M</span>Mobitel</span>
-        <span class="op-badge" style="--op:#f5821f" aria-hidden="true"><span class="op-mark">H</span>Hutch</span>
-        <span class="op-badge" style="--op:#ed1c24" aria-hidden="true"><span class="op-mark">A</span>Airtel</span>
-      </div>
+    <div class="operators-row shell">
+      <span class="op-badge op-logo"><img src="{{ asset('images/operators/dialog.png') }}" alt="Dialog" loading="lazy"></span>
+      <span class="op-badge op-logo"><img src="{{ asset('images/operators/mobitel.png') }}" alt="Mobitel" loading="lazy"></span>
+      <span class="op-badge op-logo"><img src="{{ asset('images/operators/hutch.png') }}" alt="Hutch" loading="lazy"></span>
+      <span class="op-badge op-logo"><img src="{{ asset('images/operators/airtel.png') }}" alt="Airtel" loading="lazy"></span>
     </div>
   </section>
 
@@ -93,7 +104,7 @@
 
       <div class="capabilities">
         <div>
-          <span class="cap-icon" aria-hidden="true"><x-icon name="language" /></span>
+          <span class="cap-icon c-purple" aria-hidden="true"><x-icon name="language" /></span>
           <h3>Sinhala and Tamil, counted honestly</h3>
           <p>
             Non-Latin text drops to 70 characters per segment. The composer shows that
@@ -101,7 +112,7 @@
           </p>
         </div>
         <div>
-          <span class="cap-icon" aria-hidden="true"><x-icon name="check-circle" /></span>
+          <span class="cap-icon c-green" aria-hidden="true"><x-icon name="check-circle" /></span>
           <h3>Delivery receipts per number</h3>
           <p>
             Filter by status, sender name or date range, then export the lot to CSV for
@@ -109,7 +120,7 @@
           </p>
         </div>
         <div>
-          <span class="cap-icon" aria-hidden="true"><x-icon name="tag" /></span>
+          <span class="cap-icon c-amber" aria-hidden="true"><x-icon name="tag" /></span>
           <h3>Registered sender names</h3>
           <p>
             Messages arrive from your brand, not a shortcode. Submit a sender name and
@@ -117,7 +128,7 @@
           </p>
         </div>
         <div>
-          <span class="cap-icon" aria-hidden="true"><x-icon name="user-group" /></span>
+          <span class="cap-icon c-indigo" aria-hidden="true"><x-icon name="user-group" /></span>
           <h3>Contact groups</h3>
           <p>
             Paste a list, send to the whole group in one call, and keep the group in
@@ -125,7 +136,7 @@
           </p>
         </div>
         <div>
-          <span class="cap-icon" aria-hidden="true"><x-icon name="clock" /></span>
+          <span class="cap-icon c-rose" aria-hidden="true"><x-icon name="clock" /></span>
           <h3>Scheduled sends</h3>
           <p>
             Queue a campaign for Monday at 9am. Credits are held when you schedule, so
@@ -133,7 +144,7 @@
           </p>
         </div>
         <div>
-          <span class="cap-icon" aria-hidden="true"><x-icon name="banknotes" /></span>
+          <span class="cap-icon c-gold" aria-hidden="true"><x-icon name="banknotes" /></span>
           <h3>Credits that reconcile</h3>
           <p>
             Every debit, refund and top-up lands in a ledger with a running balance.
@@ -156,17 +167,17 @@
           <p>One POST with a recipient, sender name and message. Cost comes back in the same response.</p>
         </div>
         <div class="journey-step">
-          <span class="journey-icon" aria-hidden="true"><x-icon name="banknotes" /></span>
+          <span class="journey-icon c-gold" aria-hidden="true"><x-icon name="banknotes" /></span>
           <h3>Credits are held</h3>
           <p>The segment count is priced instantly and credits are reserved before anything sends.</p>
         </div>
         <div class="journey-step">
-          <span class="journey-icon" aria-hidden="true"><x-icon name="chat-bubble-left-right" /></span>
+          <span class="journey-icon c-indigo" aria-hidden="true"><x-icon name="chat-bubble-left-right" /></span>
           <h3>Routed to the network</h3>
           <p>Delivered directly to Dialog, Mobitel, Hutch or Airtel — whichever the number belongs to.</p>
         </div>
         <div class="journey-step">
-          <span class="journey-icon" aria-hidden="true"><x-icon name="check-circle" /></span>
+          <span class="journey-icon c-amber" aria-hidden="true"><x-icon name="check-circle" /></span>
           <h3>Receipt returns</h3>
           <p>A delivery status lands against the message ID, visible in the log or by webhook.</p>
         </div>
@@ -217,7 +228,7 @@
           </ul>
         </div>
         <pre class="code"><code><span class="c"># Send a message</span>
-curl -X POST https://your-domain.lk/api/v3/sms/send \
+curl -X POST https://esms.lk/api/v3/sms/send \
   -H <span class="s">'Authorization: Bearer 12|your-token-here'</span> \
   -H <span class="s">'Content-Type: application/json'</span> \
   -H <span class="s">'Accept: application/json'</span> \
@@ -253,9 +264,33 @@ curl -X POST https://your-domain.lk/api/v3/sms/send \
 </main>
 
 <footer class="foot">
-  <div class="shell">
+  <div class="shell foot-grid">
+    <div class="foot-brand">
+      <strong data-brand>{{ config('portal.brand_name') }}</strong>
+      <p>Bulk SMS, OTPs and scheduled campaigns — delivered directly to Dialog, Mobitel, Hutch and Airtel, with a receipt for every number.</p>
+      <a href="mailto:{{ config('portal.support_email') }}">{{ config('portal.support_email') }}</a>
+    </div>
+    <div class="foot-col">
+      <h3>Product</h3>
+      <a href="/#what">What you get</a>
+      <a href="/#journey">How it works</a>
+      <a href="/#rates">Rates</a>
+    </div>
+    <div class="foot-col">
+      <h3>Developers</h3>
+      <a href="/docs">API reference</a>
+      <a href="/register">Create account</a>
+      <a href="/login">Sign in</a>
+    </div>
+    <div class="foot-col">
+      <h3>Company</h3>
+      <a href="mailto:{{ config('portal.support_email') }}">Support</a>
+      <a href="/dashboard">Dashboard</a>
+    </div>
+  </div>
+  <div class="shell foot-bottom">
     <span>&copy; <span id="year">{{ date('Y') }}</span> <span data-brand>{{ config('portal.brand_name') }}</span>. Delivered over the Text.lk gateway.</span>
-    <span><a href="/docs">API reference</a> &nbsp; <a href="/login">Sign in</a></span>
+    <span>Dialog &middot; Mobitel &middot; Hutch &middot; Airtel</span>
   </div>
 </footer>
 

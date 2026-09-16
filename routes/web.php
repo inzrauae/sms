@@ -87,5 +87,9 @@ Route::prefix('admin')->middleware(['auth', 'active', 'admin'])->group(function 
     Route::get('/messages', [AdminController::class, 'messages']);
     Route::get('/requests', [AdminController::class, 'requests']);
 
+    Route::get('/notifications', [AdminController::class, 'notifications']);
+    Route::post('/notifications/read-all', [AdminController::class, 'notificationsReadAll']);
+    Route::post('/notifications/{id}/read', [AdminController::class, 'notificationsRead']);
+
     Route::post('/settings', [AdminController::class, 'settingsStore']);
 });

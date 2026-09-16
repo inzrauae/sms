@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\InsufficientCreditsException;
 use App\Exceptions\PayPalException;
+use App\Models\AdminNotification;
 use App\Models\Transaction;
 use App\Services\CreditLedger;
 use App\Services\PayPal;
@@ -119,6 +120,13 @@ class PaypalController extends Controller
             // a future refactor can't silently swallow the ledger's guard.
             return $this->fail($e->getMessage(), 402);
         }
+
+        AdminNotification::create([
+            'user_id' => $user->id,
+            'type' => 'paypal_topup',
+            'message' => $user->name . ' paid for ' . number_format((int) $units) . ' credits via PayPal',
+            'data' => ['units' => (int) $units, 'order_id' => $orderId],
+        ]);
 
         return response()->json(['status' => 'success', 'message' => 'Payment captured. Credits added.', 'data' => [
             'credits' => $balance,

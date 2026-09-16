@@ -30,6 +30,7 @@
       settings: { title: 'Portal settings', sub: 'Branding and defaults.' }
     }, load);
 
+    loadNotifications();
     wire();
   }
 
@@ -78,12 +79,56 @@
       $('#nav-requests').hidden = !d.topup_requests;
       $('#nav-requests').textContent = d.topup_requests;
 
+      setNotifBadge(d.notifications_unread);
+
       drawStatusBar(d.traffic);
       reconcile(d);
       queue(d);
     } catch (err) {
       UI.toast(err.message, 'bad');
     }
+  }
+
+  /* Notifications --------------------------------------------------------- */
+
+  var NOTIF_TARGET = { topup_request: '#requests', sender_request: '#senders' };
+
+  function setNotifBadge(unread) {
+    var badge = $('#notif-badge');
+    badge.hidden = !unread;
+    badge.textContent = unread > 99 ? '99+' : unread;
+  }
+
+  async function loadNotifications() {
+    try {
+      var res = await UI.api('/admin/notifications');
+      setNotifBadge(res.data.unread);
+      renderNotifications(res.data.items);
+    } catch (err) {
+      $('#notif-list').innerHTML = UI.emptyState('Could not load notifications', err.message);
+    }
+  }
+
+  function renderNotifications(items) {
+    if (!items.length) {
+      $('#notif-list').innerHTML = UI.emptyState('Nothing yet', 'New requests and payments will show up here.');
+      return;
+    }
+    $('#notif-list').innerHTML = '<div class="notif-list">' + items.map(function (n) {
+      return '<button type="button" class="notif-item' + (n.read_at ? '' : ' unread') + '" data-notif="' + n.id +
+        '" data-type="' + UI.escapeHtml(n.type) + '">' +
+        '<span class="notif-item-msg">' + UI.escapeHtml(n.message) + '</span>' +
+        '<span class="notif-item-time">' + UI.formatDate(n.created_at) + '</span>' +
+        '</button>';
+    }).join('') + '</div>';
+  }
+
+  function toggleNotifPanel(open) {
+    var panel = $('#notif-panel');
+    var willOpen = open !== undefined ? open : panel.hidden;
+    panel.hidden = !willOpen;
+    $('#notif-bell').setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    if (willOpen) loadNotifications();
   }
 
   /* Icon paths sourced from Heroicons (heroicons.com), MIT licensed, 20px solid set. */
@@ -359,6 +404,26 @@
     $('#pager-prev').onclick = function () { state.page = Math.max(1, state.page - 1); loadTraffic(); };
     $('#pager-next').onclick = function () { state.page = Math.min(state.lastPage, state.page + 1); loadTraffic(); };
 
+    $('#notif-bell').onclick = function (event) {
+      event.stopPropagation();
+      toggleNotifPanel();
+    };
+    $('#notif-read-all').onclick = async function () {
+      try {
+        await UI.api('/admin/notifications/read-all', { method: 'POST' });
+        loadNotifications();
+      } catch (err) {
+        UI.toast(err.message, 'bad');
+      }
+    };
+    document.addEventListener('click', function (event) {
+      var panel = $('#notif-panel');
+      if (!panel.hidden && !event.target.closest('.notif-wrap')) toggleNotifPanel(false);
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') toggleNotifPanel(false);
+    });
+
     $('#s-save').onclick = async function () {
       try {
         await UI.api('/admin/settings', {
@@ -441,6 +506,23 @@
         } catch (err) {
           UI.toast(err.message, 'bad');
         }
+        return;
+      }
+
+      var notif = event.target.closest('[data-notif]');
+      if (notif) {
+        var wasUnread = notif.classList.contains('unread');
+        notif.classList.remove('unread');
+        try {
+          if (wasUnread) {
+            await UI.api('/admin/notifications/' + notif.dataset.notif + '/read', { method: 'POST' });
+            loadNotifications();
+          }
+        } catch (err) {
+          UI.toast(err.message, 'bad');
+        }
+        var target = NOTIF_TARGET[notif.dataset.type];
+        if (target) { toggleNotifPanel(false); location.hash = target; }
       }
     });
   }

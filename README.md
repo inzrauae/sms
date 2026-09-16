@@ -1,4 +1,4 @@
-# Lankalink SMS — Reseller Portal
+# e-SMS — Reseller Portal
 
 A white-label SMS reseller portal built with **Laravel 12** and **PHP 8.2+** that resells SMS over the **Text.lk v3 gateway**. You hold a single master Text.lk gateway account; your customers get their own individual logins, credit balances, sender names, contact groups, and API tokens.
 
@@ -45,10 +45,10 @@ TEXTLK_BASE_URL=https://app.text.lk/api/v3
 TEXTLK_TIMEOUT_MS=20000
 
 # Portal Settings
-BRAND_NAME="Lankalink SMS"
+BRAND_NAME="e-SMS"
 DEFAULT_RATE=1.10
 SIGNUP_BONUS=10
-SUPPORT_EMAIL=support@example.lk
+SUPPORT_EMAIL=support@esms.lk
 ```
 
 ### 3. Database Migration & Seeding

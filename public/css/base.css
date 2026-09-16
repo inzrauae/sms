@@ -2,17 +2,17 @@
 
 /* Tokens ---------------------------------------------------------------- */
 :root {
-  --ink:        #12303a;   /* petrol, the brand base */
-  --ink-deep:   #0a2029;
-  --ink-soft:   #1d4453;
-  --paper:      #edf1f0;
+  --ink:        #102a4c;   /* navy blue, the brand base */
+  --ink-deep:   #081a30;
+  --ink-soft:   #1f4d80;
+  --paper:      #eef2f8;
   --surface:    #ffffff;
-  --line:       #d3dedd;
-  --line-soft:  #e4ebea;
-  --muted:      #5a7681;
-  --jade:       #0e7c6b;   /* primary action, delivered */
-  --jade-deep:  #0a6153;
-  --jade-wash:  #e3f1ee;
+  --line:       #d7e1ec;
+  --line-soft:  #e8eef6;
+  --muted:      #5c7290;
+  --jade:       #2563eb;   /* primary action, delivered */
+  --jade-deep:  #1d4ed8;
+  --jade-wash:  #e3ecfd;
   --ochre:      #b8760f;   /* queued, scheduled, pending */
   --ochre-wash: #fbf0dc;
   --clay:       #a3342a;   /* failed, destructive */
