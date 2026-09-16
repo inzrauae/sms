@@ -61,7 +61,24 @@
           <div><dt>Credits each</dt><dd id="demo-segments">0</dd></div>
           <div><dt>Cost at Rs 0.99</dt><dd id="demo-cost">Rs 0.00</dd></div>
         </dl>
+        <div class="segment-bar" id="demo-segbar" role="img" aria-label="Segment usage"></div>
         <p class="note" id="demo-note">A credit covers 160 GSM characters. Longer messages split into segments and bill per segment.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="operators" aria-label="Networks reached directly">
+    <p class="operators-label shell">Delivering directly to every major network in Sri Lanka</p>
+    <div class="marquee">
+      <div class="marquee-track">
+        <span class="op-badge" style="--op:#e4032e"><span class="op-mark">D</span>Dialog</span>
+        <span class="op-badge" style="--op:#00954d"><span class="op-mark">M</span>Mobitel</span>
+        <span class="op-badge" style="--op:#f5821f"><span class="op-mark">H</span>Hutch</span>
+        <span class="op-badge" style="--op:#ed1c24"><span class="op-mark">A</span>Airtel</span>
+        <span class="op-badge" style="--op:#e4032e" aria-hidden="true"><span class="op-mark">D</span>Dialog</span>
+        <span class="op-badge" style="--op:#00954d" aria-hidden="true"><span class="op-mark">M</span>Mobitel</span>
+        <span class="op-badge" style="--op:#f5821f" aria-hidden="true"><span class="op-mark">H</span>Hutch</span>
+        <span class="op-badge" style="--op:#ed1c24" aria-hidden="true"><span class="op-mark">A</span>Airtel</span>
       </div>
     </div>
   </section>
@@ -122,6 +139,36 @@
             Every debit, refund and top-up lands in a ledger with a running balance.
             Failed sends return the credits automatically.
           </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="journey">
+    <div class="shell">
+      <h2>From your server to a Sri Lankan handset</h2>
+      <p class="sub">Four steps, typically seconds apart. Every hop is visible in your dashboard.</p>
+
+      <div class="journey">
+        <div class="journey-step">
+          <span class="journey-icon" aria-hidden="true"><x-icon name="paper-airplane" /></span>
+          <h3>You call the API</h3>
+          <p>One POST with a recipient, sender name and message. Cost comes back in the same response.</p>
+        </div>
+        <div class="journey-step">
+          <span class="journey-icon" aria-hidden="true"><x-icon name="banknotes" /></span>
+          <h3>Credits are held</h3>
+          <p>The segment count is priced instantly and credits are reserved before anything sends.</p>
+        </div>
+        <div class="journey-step">
+          <span class="journey-icon" aria-hidden="true"><x-icon name="chat-bubble-left-right" /></span>
+          <h3>Routed to the network</h3>
+          <p>Delivered directly to Dialog, Mobitel, Hutch or Airtel — whichever the number belongs to.</p>
+        </div>
+        <div class="journey-step">
+          <span class="journey-icon" aria-hidden="true"><x-icon name="check-circle" /></span>
+          <h3>Receipt returns</h3>
+          <p>A delivery status lands against the message ID, visible in the log or by webhook.</p>
         </div>
       </div>
     </div>
@@ -222,6 +269,24 @@ curl -X POST https://your-domain.lk/api/v3/sms/send \
   var cost = document.getElementById('demo-cost');
   var encoding = document.getElementById('demo-encoding');
   var note = document.getElementById('demo-note');
+  var segbar = document.getElementById('demo-segbar');
+
+  function renderSegmentBar(a) {
+    segbar.innerHTML = '';
+    var total = Math.max(a.segments, 1);
+    var shown = Math.min(total, 6);
+    for (var i = 0; i < shown; i++) {
+      var block = document.createElement('span');
+      block.className = 'seg-block' + (i < a.segments ? ' filled' : '') + (a.segments > 1 ? ' warn' : '');
+      segbar.appendChild(block);
+    }
+    if (total > shown) {
+      var more = document.createElement('span');
+      more.className = 'seg-more';
+      more.textContent = '+' + (total - shown) + ' more';
+      segbar.appendChild(more);
+    }
+  }
 
   function update() {
     var a = Segments.analyse(input.value);
@@ -229,6 +294,7 @@ curl -X POST https://your-domain.lk/api/v3/sms/send \
     segs.textContent = a.segments;
     cost.textContent = 'Rs ' + (a.segments * RATE).toFixed(2);
     encoding.textContent = a.encoding === 'gsm' ? 'GSM-7' : 'Unicode';
+    renderSegmentBar(a);
 
     if (a.encoding === 'unicode') {
       note.className = 'note warn';
