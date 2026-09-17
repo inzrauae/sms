@@ -8,8 +8,9 @@
 <meta name="description" content="Send transactional SMS, OTPs and campaigns to any Sri Lankan network. Pay per message, track every delivery, integrate in an afternoon.">
 <link rel="stylesheet" href="{{ asset('css/base.css') }}">
 <link rel="stylesheet" href="{{ asset('css/site.css') }}">
+<link rel="stylesheet" href="{{ asset('css/home-gold.css') }}">
 </head>
-<body>
+<body class="home-gold">
 
 <header class="masthead">
   <div class="shell">

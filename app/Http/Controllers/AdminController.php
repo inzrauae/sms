@@ -40,7 +40,7 @@ class AdminController extends Controller
             return is_finite($n) ? $n : null;
         }
         if (is_array($data)) {
-            foreach (['remaining_sms_unit', 'sms_unit', 'remaining', 'balance', 'units', 'available'] as $key) {
+            foreach (['remaining_balance', 'remaining_sms_unit', 'sms_unit', 'remaining', 'balance', 'units', 'available'] as $key) {
                 if (isset($data[$key])) {
                     $n = (float) preg_replace('/[^\d.\-]/', '', (string) $data[$key]);
                     if (is_finite($n)) {

@@ -55,6 +55,27 @@ class AdminTest extends TestCase
             ]);
     }
 
+    public function test_admin_overview_reads_remaining_balance_key(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        Http::fake([
+            'https://app.text.lk/api/v3/balance' => Http::response([
+                'status' => 'success',
+                'data' => ['remaining_balance' => 7500],
+            ], 200),
+        ]);
+
+        $overviewResponse = $this->actingAs($admin)->getJson('/admin/overview');
+        $overviewResponse->assertStatus(200)
+            ->assertJson([
+                'status' => 'success',
+                'data' => [
+                    'upstream_units' => 7500,
+                ],
+            ]);
+    }
+
     public function test_admin_can_adjust_user_credits_and_clear_requests(): void
     {
         $admin = User::factory()->admin()->create();
