@@ -17,6 +17,9 @@ Route::get('/register', [PageController::class, 'authPage']);
 
 Route::get('/config', [SystemController::class, 'config']);
 Route::get('/healthz', [SystemController::class, 'health']);
+Route::get('/robots.txt', [SystemController::class, 'robots']);
+Route::get('/sitemap.xml', [SystemController::class, 'sitemap']);
+Route::get('/llms.txt', [SystemController::class, 'llmsTxt']);
 
 // Server-side guards so a signed-out visitor never sees dashboard chrome.
 Route::get('/dashboard', [PageController::class, 'dashboard'])->middleware(['auth', 'active']);

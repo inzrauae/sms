@@ -4,7 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>Dashboard — {{ config('portal.brand_name') }}</title>
+<x-seo
+  title="Dashboard — {{ config('portal.brand_name') }}"
+  description="Send SMS, manage sender names, contact groups and API tokens."
+  robots="noindex, nofollow"
+  :og="false"
+/>
 <link rel="stylesheet" href="{{ asset('css/base.css') }}">
 <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>

@@ -4,11 +4,91 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>{{ config('portal.brand_name') }} — bulk SMS and OTP delivery for Sri Lanka</title>
-<meta name="description" content="Send transactional SMS, OTPs and campaigns to any Sri Lankan network. Pay per message, track every delivery, integrate in an afternoon.">
+<x-seo
+  title="SMS Gateway Sri Lanka — Bulk SMS & OTP API | {{ config('portal.brand_name') }}"
+  description="{{ config('portal.brand_name') }} is a bulk SMS gateway in Sri Lanka, delivering SMS and OTPs directly to Dialog, Mobitel, Hutch and Airtel. Rs {{ config('portal.default_rate') }} per segment, {{ config('portal.signup_bonus') }} free credits, REST API included."
+  keywords="sms gateway sri lanka, bulk sms sri lanka, sms api sri lanka, otp sms sri lanka, sms gateway, dialog sms gateway, mobitel sms gateway"
+  region="LK"
+/>
 <link rel="stylesheet" href="{{ asset('css/base.css') }}">
 <link rel="stylesheet" href="{{ asset('css/site.css') }}">
 <link rel="stylesheet" href="{{ asset('css/home-gold.css') }}">
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "name": "{{ config('portal.brand_name') }}",
+      "url": "{{ url('/') }}",
+      "email": "{{ config('portal.support_email') }}",
+      "address": { "@type": "PostalAddress", "addressCountry": "LK" },
+      "areaServed": { "@type": "Country", "name": "Sri Lanka" },
+      "knowsAbout": ["SMS gateway", "Bulk SMS", "OTP delivery", "SMS API", "Sinhala SMS", "Tamil SMS"]
+    },
+    {
+      "@type": "WebSite",
+      "name": "{{ config('portal.brand_name') }}",
+      "url": "{{ url('/') }}"
+    },
+    {
+      "@type": "Service",
+      "name": "SMS gateway Sri Lanka — bulk SMS and OTP delivery",
+      "url": "{{ url('/') }}",
+      "provider": { "@type": "Organization", "name": "{{ config('portal.brand_name') }}" },
+      "areaServed": { "@type": "Country", "name": "Sri Lanka" },
+      "serviceType": "SMS gateway API",
+      "keywords": "sms gateway sri lanka, bulk sms sri lanka, otp sms sri lanka",
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "{{ config('portal.currency') }}",
+        "price": "{{ config('portal.default_rate') }}",
+        "unitText": "per SMS segment"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the best SMS gateway in Sri Lanka?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It depends on what you send, but look for direct routes to Dialog, Mobitel, Hutch and Airtel, honest Sinhala and Tamil pricing, and a transparent per-segment cost. {{ config('portal.brand_name') }} delivers directly to all four Sri Lankan networks at a flat Rs {{ config('portal.default_rate') }} per segment with no monthly minimum." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is there an SMS gateway API for Sri Lanka?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. {{ config('portal.brand_name') }} is a REST API for Sri Lanka: Bearer token auth, JSON in and out, with endpoints to send SMS, cost a message before sending, message a saved contact group, and check delivery status." }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does an SMS cost?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Rs {{ config('portal.default_rate') }} per segment, flat rate, pay as you go. No plans and no monthly minimum, and the same price on Dialog, Mobitel, Hutch and Airtel." }
+        },
+        {
+          "@type": "Question",
+          "name": "Do you support Sinhala and Tamil messages?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Unicode messages such as Sinhala or Tamil fit 70 characters in a single segment and 67 in each segment after that, instead of the 160 a Latin (GSM-7) message gets." }
+        },
+        {
+          "@type": "Question",
+          "name": "How many free credits do I get when I sign up?",
+          "acceptedAnswer": { "@type": "Answer", "text": "{{ config('portal.signup_bonus') }} free credits, enough to send a real test message to your own phone and see the delivery receipt come back." }
+        },
+        {
+          "@type": "Question",
+          "name": "Which networks do you deliver to?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Dialog, Mobitel, Hutch and Airtel, reached directly rather than through a shared shortcode." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I send an SMS from my own system?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Generate an API token in the dashboard, then send a POST request to /api/v3/sms/send with a recipient, an approved sender name and a message. Full details are in the API reference." }
+        }
+      ]
+    }
+  ]
+}
+</script>
 </head>
 <body class="home-gold">
 
@@ -21,6 +101,7 @@
     <nav>
       <a href="#rates" class="hide-sm">Rates</a>
       <a href="#developers" class="hide-sm">Developers</a>
+      <a href="#faq" class="hide-sm">FAQ</a>
       <a href="/login">Sign in</a>
       <a href="/register" class="btn btn-sm">Create account</a>
     </nav>
@@ -38,11 +119,11 @@
     </div>
     <div class="shell">
       <div>
-        <h1>Every message, costed before you send it.</h1>
+        <h1>Sri Lanka's SMS gateway, costed before you send.</h1>
         <p class="lede">
-          Bulk SMS, OTPs and scheduled campaigns to Dialog, Mobitel, Hutch and Airtel.
-          You see the segment count and the rupee cost while you type, and a delivery
-          receipt for every number afterwards.
+          Bulk SMS, OTPs and scheduled campaigns to Dialog, Mobitel, Hutch and Airtel —
+          direct routes, not a shared aggregator. You see the segment count and the rupee
+          cost while you type, and a delivery receipt for every number afterwards.
         </p>
         <div class="actions">
           <a class="btn" href="/register">Create an account</a>
@@ -92,6 +173,42 @@
       <span class="op-badge op-logo"><img src="{{ asset('images/operators/mobitel.png') }}" alt="Mobitel" loading="lazy"></span>
       <span class="op-badge op-logo"><img src="{{ asset('images/operators/hutch.png') }}" alt="Hutch" loading="lazy"></span>
       <span class="op-badge op-logo"><img src="{{ asset('images/operators/airtel.png') }}" alt="Airtel" loading="lazy"></span>
+    </div>
+  </section>
+
+  <section class="band" id="sri-lanka">
+    <div class="shell">
+      <h2>The SMS gateway built specifically for Sri Lanka</h2>
+      <p class="sub">
+        Not a global platform with Sri Lanka bolted on. Every part of this SMS gateway —
+        encoding, pricing, number formats — is built around how messages actually move on
+        Sri Lankan networks.
+      </p>
+
+      <div class="capabilities">
+        <div>
+          <h3>Direct routes to all four networks</h3>
+          <p>Dialog, Mobitel, Hutch and Airtel — messages go straight to the network, not through a shared aggregator that adds latency and drops sender names.</p>
+        </div>
+        <div>
+          <h3>Local numbers, not just international format</h3>
+          <p>Send to 0712345678 or 94712345678 — both are accepted and normalised automatically, so you don't have to reformat every number your customers give you.</p>
+        </div>
+        <div>
+          <h3>Sinhala and Tamil counted correctly</h3>
+          <p>Unicode messages are priced honestly at 70 characters a segment, not silently billed as if they were English.</p>
+        </div>
+        <div>
+          <h3>Priced in rupees, one flat rate</h3>
+          <p>Rs 0.99 a segment, whether you send ten messages or ten thousand. No USD billing, no volume tiers to negotiate.</p>
+        </div>
+      </div>
+
+      <p class="sub" style="margin-top:28px">
+        Used as the SMS gateway for OTP verification, delivery and appointment reminders, and
+        marketing campaigns by e-commerce, fintech, healthcare and logistics businesses across
+        Sri Lanka.
+      </p>
     </div>
   </section>
 
@@ -251,6 +368,42 @@ curl -X POST https://esms.lk/api/v3/sms/send \
     <span class="k">"status"</span>: <span class="s">"Queued"</span>
   }
 }</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="faq" aria-label="Frequently asked questions">
+    <div class="shell">
+      <h2>Frequently asked questions</h2>
+      <div class="faq-list">
+        <details>
+          <summary>What is the best SMS gateway in Sri Lanka?</summary>
+          <p>It depends on what you send, but look for direct routes to Dialog, Mobitel, Hutch and Airtel, honest Sinhala and Tamil pricing, and a transparent per-segment cost. e-SMS delivers directly to all four Sri Lankan networks at a flat Rs 0.99 per segment with no monthly minimum.</p>
+        </details>
+        <details>
+          <summary>Is there an SMS gateway API for Sri Lanka?</summary>
+          <p>Yes. e-SMS is a REST API for Sri Lanka: Bearer token auth, JSON in and out, with endpoints to send SMS, cost a message before sending, message a saved contact group, and check delivery status. See the <a href="/docs">API reference</a>.</p>
+        </details>
+        <details>
+          <summary>How much does an SMS cost?</summary>
+          <p>Rs 0.99 per segment, flat rate, pay as you go. No plans and no monthly minimum, and the same price on Dialog, Mobitel, Hutch and Airtel.</p>
+        </details>
+        <details>
+          <summary>Do you support Sinhala and Tamil messages?</summary>
+          <p>Yes. Unicode messages such as Sinhala or Tamil fit 70 characters in a single segment and 67 in each segment after that, instead of the 160 a Latin (GSM-7) message gets.</p>
+        </details>
+        <details>
+          <summary>How many free credits do I get when I sign up?</summary>
+          <p>10 free credits, enough to send a real test message to your own phone and see the delivery receipt come back.</p>
+        </details>
+        <details>
+          <summary>Which networks do you deliver to?</summary>
+          <p>Dialog, Mobitel, Hutch and Airtel, reached directly rather than through a shared shortcode.</p>
+        </details>
+        <details>
+          <summary>How do I send an SMS from my own system?</summary>
+          <p>Generate an API token in the dashboard, then send a POST request to <code>/api/v3/sms/send</code> with a recipient, an approved sender name and a message. Full details are in the <a href="/docs">API reference</a>.</p>
+        </details>
       </div>
     </div>
   </section>

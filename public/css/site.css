@@ -545,3 +545,22 @@
 /* 404 */
 .notfound { min-height: 70vh; display: grid; place-items: center; text-align: center; padding: 40px 24px; }
 .notfound p { color: var(--muted); margin: 10px 0 22px; }
+
+/* FAQ accordion */
+.faq-list { margin-top: 32px; max-width: 720px; display: flex; flex-direction: column; gap: 10px; }
+.faq-list details {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-panel);
+  padding: 16px 20px;
+}
+.faq-list summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--ink);
+  list-style: none;
+}
+.faq-list summary::-webkit-details-marker { display: none; }
+.faq-list summary::after { content: '+'; float: right; color: var(--muted); }
+.faq-list details[open] summary::after { content: '\2212'; }
+.faq-list details p { margin-top: 10px; color: var(--muted); font-size: 0.94rem; }

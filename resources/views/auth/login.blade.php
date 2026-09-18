@@ -4,9 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>Sign in — {{ config('portal.brand_name') }}</title>
+@php $isRegister = request()->is('register'); @endphp
+<x-seo
+  :title="($isRegister ? 'Create your account' : 'Sign in') . ' — ' . config('portal.brand_name')"
+  :description="$isRegister
+      ? 'Create a free ' . config('portal.brand_name') . ' account and get ' . config('portal.signup_bonus') . ' free SMS credits. No card needed.'
+      : 'Sign in to your ' . config('portal.brand_name') . ' dashboard to send SMS, manage sender names, contact groups and API tokens.'"
+/>
 <link rel="stylesheet" href="{{ asset('css/base.css') }}">
 <link rel="stylesheet" href="{{ asset('css/site.css') }}">
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ url('/') }}" },
+    { "@type": "ListItem", "position": 2, "name": "{{ $isRegister ? 'Create account' : 'Sign in' }}", "item": "{{ url()->current() }}" }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="auth-page">
@@ -111,6 +127,7 @@
     views.login.hidden = name !== 'login';
     views.register.hidden = name !== 'register';
     history.replaceState(null, '', name === 'register' ? '/register' : '/login');
+    document.title = (name === 'register' ? 'Create your account' : 'Sign in') + ' — ' + (document.querySelector('[data-brand]') || {}).textContent;
     var first = views[name].querySelector('input');
     if (first) first.focus();
   }
@@ -176,7 +193,8 @@
     Array.prototype.forEach.call(document.querySelectorAll('[data-brand]'), function (el) {
       el.textContent = payload.data.brand_name;
     });
-    document.title = 'Sign in — ' + payload.data.brand_name;
+    var registerShown = !views.register.hidden;
+    document.title = (registerShown ? 'Create your account' : 'Sign in') + ' — ' + payload.data.brand_name;
   }).catch(function () {});
 })();
 </script>

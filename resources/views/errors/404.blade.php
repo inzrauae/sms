@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Page not found</title>
+<title>Page not found — {{ config('portal.brand_name') }}</title>
+<meta name="description" content="This page does not exist. Head back to the {{ config('portal.brand_name') }} home page or the API reference.">
+<meta name="robots" content="noindex, follow">
 <link rel="stylesheet" href="{{ asset('css/base.css') }}">
 <link rel="stylesheet" href="{{ asset('css/site.css') }}">
 </head>

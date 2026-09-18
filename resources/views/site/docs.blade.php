@@ -4,9 +4,45 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>API reference — {{ config('portal.brand_name') }}</title>
+<x-seo
+  title="SMS Gateway API Reference — Sri Lanka | {{ config('portal.brand_name') }}"
+  description="REST API reference for the {{ config('portal.brand_name') }} SMS gateway in Sri Lanka: send SMS, cost a message before sending, message contact groups, check delivery status and read your credit balance. Bearer token auth, JSON in, JSON out."
+  keywords="sms gateway api sri lanka, sms api sri lanka, bulk sms api, sms gateway documentation"
+  region="LK"
+  type="article"
+/>
 <link rel="stylesheet" href="{{ asset('css/base.css') }}">
 <link rel="stylesheet" href="{{ asset('css/site.css') }}">
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "{{ url('/') }}" },
+        { "@type": "ListItem", "position": 2, "name": "API reference", "item": "{{ url('/docs') }}" }
+      ]
+    },
+    {
+      "@type": "TechArticle",
+      "headline": "SMS gateway API reference — {{ config('portal.brand_name') }}",
+      "url": "{{ url('/docs') }}",
+      "about": "SMS gateway REST API for Sri Lanka",
+      "author": { "@type": "Organization", "name": "{{ config('portal.brand_name') }}" }
+    },
+    {
+      "@type": "HowTo",
+      "name": "Send an SMS via the {{ config('portal.brand_name') }} API",
+      "step": [
+        { "@type": "HowToStep", "name": "Generate a token", "text": "Generate an API token in the dashboard under API tokens." },
+        { "@type": "HowToStep", "name": "Send the request", "text": "POST to /api/v3/sms/send with a Bearer token, a recipient, an approved sender_id and a message." },
+        { "@type": "HowToStep", "name": "Read the result", "text": "The response returns the message uid, segment count, credits charged and queued status. A delivery receipt follows once the network confirms." }
+      ]
+    }
+  ]
+}
+</script>
 <style>
   .doc { max-width: 780px; margin: 0 auto; padding: 48px 24px 80px; }
   .doc h2 { margin-top: 46px; padding-top: 22px; border-top: 1px solid var(--line); }
@@ -36,10 +72,10 @@
 </header>
 
 <main class="doc">
-  <h1>API reference</h1>
+  <h1>SMS gateway API reference</h1>
   <p>
-    JSON in, JSON out, over HTTPS. Every request carries an API token you generate
-    in the dashboard under API tokens.
+    The REST API behind this SMS gateway for Sri Lanka. JSON in, JSON out, over HTTPS.
+    Every request carries an API token you generate in the dashboard under API tokens.
   </p>
 
   <div class="code" style="margin-top:20px">

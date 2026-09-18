@@ -4,7 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<title>Console — {{ config('portal.brand_name') }}</title>
+<x-seo
+  title="Console — {{ config('portal.brand_name') }}"
+  description="Admin console for managing customers, sender name approvals and platform settings."
+  robots="noindex, nofollow"
+  :og="false"
+/>
 <link rel="stylesheet" href="{{ asset('css/base.css') }}">
 <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
